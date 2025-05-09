@@ -14,7 +14,7 @@ const journeySteps: JourneyStep[] = [
   {
     level: 1,
     title: 'Awareness',
-    description: 'Surface what's holding you back. Start moving again.',
+    description: "Surface what's holding you back. Start moving again.",
     icon: <Circle className="w-8 h-8 text-epic-blue" />
   },
   {
