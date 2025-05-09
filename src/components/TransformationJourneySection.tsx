@@ -1,7 +1,7 @@
-
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Link } from 'react-router-dom';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface JourneyStep {
   level: number;
@@ -81,6 +81,7 @@ const TransformationJourneySection: React.FC = () => {
   const [isVisible, setIsVisible] = React.useState(false);
   const [scrollProgress, setScrollProgress] = React.useState(0);
   const [activeStepIndex, setActiveStepIndex] = React.useState(0);
+  const [stepVisibility, setStepVisibility] = useState<boolean[]>(Array(journeySteps.length).fill(false));
 
   useEffect(() => {
     const observer = new IntersectionObserver(([entry]) => {
@@ -115,6 +116,19 @@ const TransformationJourneySection: React.FC = () => {
             Math.floor(progress * journeySteps.length)
           );
           setActiveStepIndex(newActiveIndex);
+          
+          // Update individual step visibility
+          const stepElements = document.querySelectorAll('[data-step-index]');
+          const newStepVisibility = [...stepVisibility];
+          
+          stepElements.forEach((el) => {
+            const stepIndex = parseInt((el as HTMLElement).dataset.stepIndex || '0', 10);
+            const stepRect = el.getBoundingClientRect();
+            const isStepVisible = stepRect.top < viewportHeight * 0.8 && stepRect.bottom > viewportHeight * 0.2;
+            newStepVisibility[stepIndex] = isStepVisible;
+          });
+          
+          setStepVisibility(newStepVisibility);
         }
       }
     };
@@ -128,7 +142,7 @@ const TransformationJourneySection: React.FC = () => {
       }
       window.removeEventListener('scroll', handleScroll);
     };
-  }, []);
+  }, [stepVisibility]);
 
   // Helper function for color classes
   const getColorClass = (color: string): string => {
@@ -161,18 +175,32 @@ const TransformationJourneySection: React.FC = () => {
     }
   };
 
-  // Get current line color based on active step
+  // Get current line color based on active step with transition effect
   const getLineGradientStyle = () => {
-    const { color } = journeySteps[activeStepIndex];
-    // Create a gradient that transitions between the step colors
+    // Create a smooth gradient transition between colors based on scroll progress
+    const totalSteps = journeySteps.length;
+    const stepProgress = scrollProgress * totalSteps;
+    const currentIndex = Math.floor(stepProgress);
+    const nextIndex = Math.min(totalSteps - 1, currentIndex + 1);
+    const progressBetweenSteps = stepProgress - currentIndex;
+    
+    let gradientStyle;
+    
+    if (currentIndex === nextIndex) {
+      // If we're at the last step, just use that color
+      gradientStyle = journeySteps[currentIndex].color;
+    } else {
+      // Interpolate between current and next color
+      gradientStyle = `linear-gradient(to bottom, 
+        ${journeySteps[currentIndex].color} 0%, 
+        ${journeySteps[currentIndex].color} ${(1 - progressBetweenSteps) * 100}%, 
+        ${journeySteps[nextIndex].color} 100%)`;
+    }
+
     return {
-      background: `linear-gradient(to bottom, ${journeySteps.map((step, i) => {
-        // Calculate position based on scroll progress
-        const position = i / (journeySteps.length - 1) * 100;
-        return `${step.color} ${position}%`;
-      }).join(', ')})`,
-      height: `${scrollProgress * 100}%`,
-      transition: 'height 0.5s ease-out'
+      background: gradientStyle,
+      height: `${Math.max(0, Math.min(100, scrollProgress * 100))}%`,
+      transition: 'height 0.3s ease-out'
     };
   };
 
@@ -205,35 +233,78 @@ const TransformationJourneySection: React.FC = () => {
         </div>
 
         <div className="relative max-w-4xl mx-auto">
-          {/* Vertical connecting line */}
-          <div className="absolute left-4 top-8 bottom-8 w-0.5 bg-gray-200">
-            <div ref={lineRef} style={getLineGradientStyle()} />
+          {/* Vertical connecting line with enhanced animation */}
+          <div className="absolute left-4 top-8 bottom-8 w-1 bg-gray-200 rounded-full overflow-hidden">
+            <div 
+              ref={lineRef} 
+              className="absolute left-0 bottom-0 w-full transition-all duration-500 ease-in-out"
+              style={getLineGradientStyle()} 
+            />
           </div>
 
           <div className="space-y-24 pb-16">
-            {journeySteps.map((step, index) => <div key={index} className={cn("relative flex items-start opacity-0", isVisible && "animate-fade-in")} style={{
-            animationDelay: `${0.2 * index}s`
-          }}>
-                <div className={cn(
-                  "absolute left-0 top-0 flex items-center justify-center w-8 h-8 rounded-full bg-white border-2 border-gray-200 z-10 transition-all duration-300", 
-                  scrollProgress > index / journeySteps.length * 0.8 && `scale-125 border-2 ${step.baseColorClass}`
-                )}>
+            {journeySteps.map((step, index) => (
+              <div 
+                key={index} 
+                data-step-index={index}
+                className={cn(
+                  "relative flex items-start opacity-0", 
+                  isVisible && "animate-fade-in"
+                )} 
+                style={{
+                  animationDelay: `${0.2 * index}s`
+                }}
+              >
+                {/* Circle indicator with dynamic color and transition */}
+                <div 
+                  className={cn(
+                    "absolute left-0 top-0 flex items-center justify-center w-8 h-8 rounded-full border-2 z-10 transition-all duration-500",
+                    scrollProgress > index / journeySteps.length ? 
+                      `scale-125 ${step.baseColorClass} border-transparent` : 
+                      "bg-white border-gray-200"
+                  )}
+                >
+                  <div className={cn(
+                    "w-4 h-4 rounded-full transition-all duration-500",
+                    scrollProgress > index / journeySteps.length ? 
+                      "scale-100 bg-white" : "scale-0"
+                  )} />
                 </div>
                 
                 <div className="ml-16 max-w-3xl">
-                  <span className={cn("text-sm font-medium", step.textColorClass)}>Level {step.level}</span>
-                  <h3 className={cn("text-2xl font-bold mb-2", step.textColorClass)}>{step.title}</h3>
-                  <p className="text-lg font-semibold text-gray-800 mb-3">{step.description}</p>
-                  <p className="text-gray-600 mb-4">{step.extendedDescription}</p>
+                  <span className={cn(
+                    "text-sm font-medium transition-colors duration-300", 
+                    step.textColorClass
+                  )}>
+                    Level {step.level}
+                  </span>
+                  
+                  <h3 className={cn(
+                    "text-2xl font-bold mb-2 transition-colors duration-300", 
+                    step.textColorClass
+                  )}>
+                    {step.title}
+                  </h3>
+                  
+                  <p className="text-lg font-semibold text-gray-800 mb-3">
+                    {step.description}
+                  </p>
+                  
+                  <p className="text-gray-600 mb-4">
+                    {step.extendedDescription}
+                  </p>
                   
                   <div className="mt-4 mb-4">
-                    <h4 className="text-sm font-semibold uppercase text-gray-500 mb-2">Accelerators to {index === 0 ? "start with" : index === 1 ? "explore" : index === 2 ? "apply" : "launch"}:</h4>
+                    <h4 className="text-sm font-semibold uppercase text-gray-500 mb-2">
+                      Accelerators to {index === 0 ? "start with" : index === 1 ? "explore" : index === 2 ? "apply" : "launch"}:
+                    </h4>
+                    
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
                       {step.accelerators.map((accelerator, accIndex) => (
                         <div 
                           key={accIndex}
                           className={cn(
-                            "p-4 rounded-lg border bg-gradient-to-br transition-all duration-300 hover:shadow-md",
+                            "p-4 rounded-lg border bg-gradient-to-br transition-all duration-500 hover:shadow-md",
                             getCategoryColorClass(accelerator.category),
                             "transform hover:scale-[1.02] cursor-pointer"
                           )}
@@ -241,8 +312,12 @@ const TransformationJourneySection: React.FC = () => {
                           <div className="flex items-start space-x-2">
                             <span className="mt-1">{getColorEmoji(accelerator.color)}</span>
                             <div>
-                              <span className={`font-medium ${getColorClass(accelerator.color)}`}>{accelerator.name}</span>
-                              <p className="text-gray-600 text-sm mt-1">{accelerator.description}</p>
+                              <span className={`font-medium ${getColorClass(accelerator.color)}`}>
+                                {accelerator.name}
+                              </span>
+                              <p className="text-gray-600 text-sm mt-1">
+                                {accelerator.description}
+                              </p>
                               <div className="mt-2">
                                 <span className="text-xs font-medium px-2 py-1 rounded-full bg-white/50 border border-gray-200 inline-block">
                                   {accelerator.category}
@@ -267,7 +342,8 @@ const TransformationJourneySection: React.FC = () => {
                     <div className="mt-8 border-t border-gray-200 w-1/2 opacity-50"></div>
                   )}
                 </div>
-              </div>)}
+              </div>
+            ))}
           </div>
         </div>
       </div>
