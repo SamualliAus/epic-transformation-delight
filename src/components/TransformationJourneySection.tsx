@@ -1,3 +1,4 @@
+
 import React, { useRef, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { Circle, Flag, Award, Star } from 'lucide-react';
@@ -213,44 +214,6 @@ const TransformationJourneySection: React.FC = () => {
                     <div className="mt-8 border-t border-gray-200 w-1/2 opacity-50"></div>
                   )}
                 </div>
-              </div>)}
-          </div>
-        </div>
-
-        {/* Mobile horizontal scroll version */}
-        <div className="lg:hidden mt-16 overflow-x-auto pb-12">
-          <div className="flex space-x-6 min-w-max px-4">
-            {journeySteps.map((step, index) => <div key={index} className={cn("relative w-80 p-6 border rounded-lg shadow-sm opacity-0", isVisible && "animate-fade-in")} style={{
-            animationDelay: `${0.2 * index}s`
-          }}>
-                <div className="flex items-center mb-4">
-                  <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-50 mr-4">
-                    {step.icon}
-                  </div>
-                  <span className="text-sm font-medium text-epic-blue">Level {step.level}</span>
-                </div>
-                <h3 className="text-xl font-bold mb-2">{step.title}</h3>
-                <p className="text-gray-700 font-medium mb-2">{step.description}</p>
-                <p className="text-gray-600 mb-4 text-sm">{step.extendedDescription}</p>
-                
-                <div className="mb-4">
-                  <h4 className="text-xs font-semibold uppercase text-gray-500 mb-2">Accelerators:</h4>
-                  <ul className="space-y-1 text-sm">
-                    {step.accelerators.map((acc, i) => (
-                      <li key={i} className="flex items-start">
-                        <span className="mr-1">{getColorEmoji(acc.color)}</span>
-                        <span className={`font-medium ${getColorClass(acc.color)}`}>{acc.name}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                
-                <Link 
-                  to="/accelerators" 
-                  className="text-sm text-epic-blue hover:text-epic-orange inline-flex items-center mt-2"
-                >
-                  Explore these accelerators →
-                </Link>
               </div>)}
           </div>
         </div>
