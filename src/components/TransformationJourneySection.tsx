@@ -105,7 +105,7 @@ const TransformationJourneySection: React.FC = () => {
         );
         setActiveStepIndex(newActiveIndex);
         
-        // Update individual step visibility - use a more efficient approach
+        // Update individual step visibility with a more efficient approach
         const newStepVisibility = [...stepVisibility];
         let hasChanges = false;
         
@@ -187,16 +187,28 @@ const TransformationJourneySection: React.FC = () => {
 
   // Get current line color based on active step with transition effect
   const getLineGradientStyle = () => {
+    // Make sure we have journeySteps and valid indices before proceeding
+    if (!journeySteps.length) {
+      return {
+        background: '#0EA5E9', // Default to blue if no steps
+        height: '0%',
+        transition: 'height 0.3s ease-out, background 0.5s ease-in-out'
+      };
+    }
+    
     // Create a smooth gradient transition between colors based on scroll progress
     const totalSteps = journeySteps.length;
     const stepProgress = scrollProgress * totalSteps;
-    const currentIndex = Math.floor(stepProgress);
+    const currentIndex = Math.min(Math.floor(stepProgress), totalSteps - 1);
     const nextIndex = Math.min(totalSteps - 1, currentIndex + 1);
     const progressBetweenSteps = stepProgress - currentIndex;
     
     let gradientStyle;
     
-    if (currentIndex === nextIndex) {
+    // Safety checks to prevent undefined access
+    if (currentIndex < 0 || currentIndex >= totalSteps) {
+      gradientStyle = journeySteps[0].color; // Fallback to first step color
+    } else if (currentIndex === nextIndex) {
       // If we're at the last step, just use that color
       gradientStyle = journeySteps[currentIndex].color;
     } else {
