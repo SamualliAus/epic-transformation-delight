@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { cn } from '@/lib/utils';
 import { Link } from 'react-router-dom';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -78,10 +78,55 @@ const journeySteps: JourneyStep[] = [{
 const TransformationJourneySection: React.FC = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const lineRef = useRef<HTMLDivElement>(null);
-  const [isVisible, setIsVisible] = React.useState(false);
-  const [scrollProgress, setScrollProgress] = React.useState(0);
-  const [activeStepIndex, setActiveStepIndex] = React.useState(0);
+  const [isVisible, setIsVisible] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [activeStepIndex, setActiveStepIndex] = useState(0);
   const [stepVisibility, setStepVisibility] = useState<boolean[]>(Array(journeySteps.length).fill(false));
+
+  // Memoize the scroll handler to prevent unnecessary re-renders
+  const handleScroll = useCallback(() => {
+    if (sectionRef.current) {
+      const rect = sectionRef.current.getBoundingClientRect();
+      const sectionHeight = rect.height;
+      const sectionTop = rect.top;
+      const viewportHeight = window.innerHeight;
+      
+      if (sectionTop <= viewportHeight && sectionTop > -sectionHeight) {
+        // Improved calculation for more accurate progress based on viewport position
+        const progress = Math.min(1, Math.max(0, 
+          (viewportHeight - sectionTop) / (viewportHeight + sectionHeight * 0.7)
+        ));
+        setScrollProgress(progress);
+        
+        // Determine active step based on scroll position
+        const newActiveIndex = Math.min(
+          journeySteps.length - 1,
+          Math.floor(progress * journeySteps.length)
+        );
+        setActiveStepIndex(newActiveIndex);
+        
+        // Update individual step visibility - use a more efficient approach
+        const newStepVisibility = [...stepVisibility];
+        let hasChanges = false;
+        
+        document.querySelectorAll('[data-step-index]').forEach((el) => {
+          const stepIndex = parseInt((el as HTMLElement).dataset.stepIndex || '0', 10);
+          const stepRect = el.getBoundingClientRect();
+          const isStepVisible = stepRect.top < viewportHeight * 0.8 && stepRect.bottom > viewportHeight * 0.2;
+          
+          if (newStepVisibility[stepIndex] !== isStepVisible) {
+            newStepVisibility[stepIndex] = isStepVisible;
+            hasChanges = true;
+          }
+        });
+        
+        // Only update state if there are actual changes
+        if (hasChanges) {
+          setStepVisibility(newStepVisibility);
+        }
+      }
+    }
+  }, [stepVisibility.length]); // Only depends on the length of stepVisibility
 
   useEffect(() => {
     const observer = new IntersectionObserver(([entry]) => {
@@ -96,44 +141,9 @@ const TransformationJourneySection: React.FC = () => {
       observer.observe(sectionRef.current);
     }
     
-    const handleScroll = () => {
-      if (sectionRef.current) {
-        const rect = sectionRef.current.getBoundingClientRect();
-        const sectionHeight = rect.height;
-        const sectionTop = rect.top;
-        const viewportHeight = window.innerHeight;
-        
-        if (sectionTop <= viewportHeight && sectionTop > -sectionHeight) {
-          // Improved calculation for more accurate progress based on viewport position
-          const progress = Math.min(1, Math.max(0, 
-            (viewportHeight - sectionTop) / (viewportHeight + sectionHeight * 0.7)
-          ));
-          setScrollProgress(progress);
-          
-          // Determine active step based on scroll position
-          const newActiveIndex = Math.min(
-            journeySteps.length - 1,
-            Math.floor(progress * journeySteps.length)
-          );
-          setActiveStepIndex(newActiveIndex);
-          
-          // Update individual step visibility
-          const stepElements = document.querySelectorAll('[data-step-index]');
-          const newStepVisibility = [...stepVisibility];
-          
-          stepElements.forEach((el) => {
-            const stepIndex = parseInt((el as HTMLElement).dataset.stepIndex || '0', 10);
-            const stepRect = el.getBoundingClientRect();
-            const isStepVisible = stepRect.top < viewportHeight * 0.8 && stepRect.bottom > viewportHeight * 0.2;
-            newStepVisibility[stepIndex] = isStepVisible;
-          });
-          
-          setStepVisibility(newStepVisibility);
-        }
-      }
-    };
-    
+    // Add scroll event listener
     window.addEventListener('scroll', handleScroll);
+    // Initial call to set initial values
     handleScroll();
     
     return () => {
@@ -142,7 +152,7 @@ const TransformationJourneySection: React.FC = () => {
       }
       window.removeEventListener('scroll', handleScroll);
     };
-  }, [stepVisibility]);
+  }, [handleScroll]); // Add handleScroll to dependency array
 
   // Helper function for color classes
   const getColorClass = (color: string): string => {
@@ -200,17 +210,25 @@ const TransformationJourneySection: React.FC = () => {
     return {
       background: gradientStyle,
       height: `${Math.max(0, Math.min(100, scrollProgress * 100))}%`,
-      transition: 'height 0.3s ease-out'
+      transition: 'height 0.3s ease-out, background 0.5s ease-in-out'
     };
   };
 
-  return <section ref={sectionRef} id="transformation-journey" className="py-24 bg-gradient-to-br from-gray-50 to-white relative overflow-hidden">
+  return (
+    <section 
+      ref={sectionRef} 
+      id="transformation-journey" 
+      className="py-24 bg-gradient-to-br from-gray-50 to-white relative overflow-hidden"
+    >
       <div className="absolute inset-0 -z-10">
         <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-epic-light-blue rounded-full filter blur-3xl opacity-10 animate-spin-slow"></div>
-        <div className="absolute bottom-1/4 left-1/4 w-64 h-64 bg-epic-light-orange rounded-full filter blur-3xl opacity-10 animate-spin-slow" style={{
-        animationDirection: 'reverse',
-        animationDuration: '25s'
-      }}></div>
+        <div 
+          className="absolute bottom-1/4 left-1/4 w-64 h-64 bg-epic-light-orange rounded-full filter blur-3xl opacity-10 animate-spin-slow" 
+          style={{
+            animationDirection: 'reverse',
+            animationDuration: '25s'
+          }}
+        ></div>
       </div>
       
       <div className="container-custom">
@@ -347,7 +365,8 @@ const TransformationJourneySection: React.FC = () => {
           </div>
         </div>
       </div>
-    </section>;
+    </section>
+  );
 };
 
 export default TransformationJourneySection;
