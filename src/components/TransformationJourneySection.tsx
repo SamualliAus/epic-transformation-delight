@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { Circle, Flag, Award, Star } from 'lucide-react';
@@ -144,10 +143,21 @@ const TransformationJourneySection: React.FC = () => {
       
       <div className="container-custom">
         <div className="max-w-3xl mx-auto mb-16 text-center">
-          <h2 className={cn("mb-4 opacity-0", isVisible && "animate-fade-in")}>Your EPiC Journey</h2>
-          <p className={cn("text-xl text-gray-700 mb-12 opacity-0", isVisible && "animate-fade-in")} style={{
-          animationDelay: '0.2s'
-        }}>Change isn't one-size-fits-all. We meet you where you are.</p>
+          <h2 className={cn(
+            "mb-4 opacity-0",
+            isVisible && "animate-fade-in"
+          )}>
+            Your EPiC Journey
+          </h2>
+          <p className={cn(
+            "text-xl text-gray-700 mb-12 opacity-0",
+            isVisible && "animate-fade-in"
+          )}
+          style={{ animationDelay: '0.2s' }}
+          >
+            Transformation is never one-size-fits-all. That's why we meet you where you are.
+            Whether you're feeling stuck, sensing friction, or striving to scale, EPiC gives you a map, and the right hands-on guidance to move forward with clarity and confidence.
+          </p>
         </div>
 
         <div className="relative max-w-4xl mx-auto">
