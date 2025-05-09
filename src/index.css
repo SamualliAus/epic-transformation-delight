@@ -109,14 +109,18 @@
   }
   
   .btn-primary {
-    @apply bg-epic-blue text-white hover:bg-epic-blue/90 py-3 px-8 rounded-lg font-medium transition-all 
-    duration-300 hover:shadow-lg inline-flex items-center justify-center group;
+    @apply bg-epic-blue text-white hover:bg-epic-blue/90 py-3 px-8 rounded-lg font-medium transition-all
+    duration-300 hover:shadow-lg inline-flex items-center justify-center;
   }
+  
+  /* The group class is now applied directly in HTML where needed */
   
   .btn-secondary {
     @apply bg-transparent border-2 border-epic-blue text-epic-blue hover:bg-epic-blue/10 py-[10px] px-8 
-    rounded-lg font-medium transition-all duration-300 inline-flex items-center justify-center group;
+    rounded-lg font-medium transition-all duration-300 inline-flex items-center justify-center;
   }
+  
+  /* The group class is now applied directly in HTML where needed */
   
   .nav-link {
     @apply relative font-medium text-gray-600 hover:text-epic-blue transition-colors duration-300 px-2 py-1;

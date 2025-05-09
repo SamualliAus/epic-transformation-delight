@@ -73,7 +73,7 @@ const CTASection: React.FC = () => {
 
             <Button 
               variant="outline" 
-              className="btn-secondary text-lg flex items-center"
+              className="btn-secondary text-lg flex items-center group"
               onClick={() => window.location.href = '#'}
             >
               <Download className="mr-2" size={18} />

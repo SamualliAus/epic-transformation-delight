@@ -78,7 +78,7 @@ const Navigation: React.FC = () => {
         </nav>
 
         <Button 
-          className="hidden lg:flex btn-primary"
+          className="hidden lg:flex btn-primary group"
           onClick={() => window.location.href="/contact"}
         >
           Let's Talk
@@ -108,7 +108,7 @@ const Navigation: React.FC = () => {
                 </NavLink>
               ))}
               <Button 
-                className="btn-primary w-full mt-6"
+                className="btn-primary w-full mt-6 group"
                 onClick={() => {
                   window.location.href="/contact";
                   setIsMobileMenuOpen(false);
