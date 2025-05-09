@@ -81,7 +81,9 @@ const TransformationJourneySection: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [activeStepIndex, setActiveStepIndex] = useState(0);
-  const [stepVisibility, setStepVisibility] = useState<boolean[]>(Array(journeySteps.length).fill(false));
+  const [stepVisibility, setStepVisibility] = useState<boolean[]>(
+    Array(journeySteps.length).fill(false)
+  );
 
   // Memoize the scroll handler to prevent unnecessary re-renders
   const handleScroll = useCallback(() => {
@@ -91,70 +93,90 @@ const TransformationJourneySection: React.FC = () => {
       const sectionTop = rect.top;
       const viewportHeight = window.innerHeight;
       
+      // Only update if section is in view
       if (sectionTop <= viewportHeight && sectionTop > -sectionHeight) {
-        // Improved calculation for more accurate progress based on viewport position
-        const progress = Math.min(1, Math.max(0, 
-          (viewportHeight - sectionTop) / (viewportHeight + sectionHeight * 0.7)
-        ));
-        setScrollProgress(progress);
+        // Calculate progress based on viewport position
+        const calculatedProgress = Math.min(
+          1, 
+          Math.max(0, (viewportHeight - sectionTop) / (viewportHeight + sectionHeight * 0.7))
+        );
         
-        // Determine active step based on scroll position
+        setScrollProgress(calculatedProgress);
+        
+        // Calculate active step - ensure it's always valid
         const newActiveIndex = Math.min(
           journeySteps.length - 1,
-          Math.floor(progress * journeySteps.length)
+          Math.max(0, Math.floor(calculatedProgress * journeySteps.length))
         );
+        
         setActiveStepIndex(newActiveIndex);
         
-        // Update individual step visibility with a more efficient approach
-        const newStepVisibility = [...stepVisibility];
-        let hasChanges = false;
-        
-        document.querySelectorAll('[data-step-index]').forEach((el) => {
-          const stepIndex = parseInt((el as HTMLElement).dataset.stepIndex || '0', 10);
-          const stepRect = el.getBoundingClientRect();
-          const isStepVisible = stepRect.top < viewportHeight * 0.8 && stepRect.bottom > viewportHeight * 0.2;
+        // Optimize step visibility updates
+        const elements = document.querySelectorAll('[data-step-index]');
+        if (elements && elements.length) {
+          const newVisibility = [...stepVisibility];
+          let changed = false;
           
-          if (newStepVisibility[stepIndex] !== isStepVisible) {
-            newStepVisibility[stepIndex] = isStepVisible;
-            hasChanges = true;
+          elements.forEach(el => {
+            const stepIndex = parseInt((el as HTMLElement).dataset.stepIndex || '0', 10);
+            if (stepIndex >= 0 && stepIndex < journeySteps.length) {
+              const rect = el.getBoundingClientRect();
+              const isVisible = rect.top < viewportHeight * 0.8 && rect.bottom > viewportHeight * 0.2;
+              
+              if (newVisibility[stepIndex] !== isVisible) {
+                newVisibility[stepIndex] = isVisible;
+                changed = true;
+              }
+            }
+          });
+          
+          if (changed) {
+            setStepVisibility(newVisibility);
           }
-        });
-        
-        // Only update state if there are actual changes
-        if (hasChanges) {
-          setStepVisibility(newStepVisibility);
         }
       }
     }
-  }, [stepVisibility.length]); // Only depends on the length of stepVisibility
+  }, [stepVisibility]);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
-        setIsVisible(true);
-      }
-    }, {
-      threshold: 0.1
-    });
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          // Initial scroll handling when section becomes visible
+          handleScroll();
+        }
+      },
+      { threshold: 0.1 }
+    );
     
     if (sectionRef.current) {
       observer.observe(sectionRef.current);
     }
     
-    // Add scroll event listener
-    window.addEventListener('scroll', handleScroll);
-    // Initial call to set initial values
-    handleScroll();
+    // Add throttled scroll event listener
+    let ticking = false;
+    const scrollListener = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          handleScroll();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+    
+    window.addEventListener('scroll', scrollListener, { passive: true });
     
     return () => {
       if (sectionRef.current) {
         observer.unobserve(sectionRef.current);
       }
-      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('scroll', scrollListener);
     };
-  }, [handleScroll]); // Add handleScroll to dependency array
+  }, [handleScroll]);
 
-  // Helper function for color classes
+  // Helper functions for colors
   const getColorClass = (color: string): string => {
     switch (color) {
       case 'blue': return 'text-epic-blue';
@@ -185,42 +207,48 @@ const TransformationJourneySection: React.FC = () => {
     }
   };
 
-  // Get current line color based on active step with transition effect
+  // Completely rewritten getLineGradientStyle function with robust error handling
   const getLineGradientStyle = () => {
-    // Make sure we have journeySteps and valid indices before proceeding
-    if (!journeySteps.length) {
+    // Defensive check - if no journey steps, return a default style
+    if (!journeySteps || journeySteps.length === 0) {
       return {
-        background: '#0EA5E9', // Default to blue if no steps
+        background: '#0EA5E9', // Default blue
         height: '0%',
         transition: 'height 0.3s ease-out, background 0.5s ease-in-out'
       };
     }
     
-    // Create a smooth gradient transition between colors based on scroll progress
+    // Calculate progress values safely
     const totalSteps = journeySteps.length;
     const stepProgress = scrollProgress * totalSteps;
-    const currentIndex = Math.min(Math.floor(stepProgress), totalSteps - 1);
-    const nextIndex = Math.min(totalSteps - 1, currentIndex + 1);
+    
+    // Ensure we have valid indices
+    const currentIndex = Math.min(Math.max(0, Math.floor(stepProgress)), totalSteps - 1);
+    const nextIndex = Math.min(currentIndex + 1, totalSteps - 1);
+    
+    // Calculate fraction between current and next step
     const progressBetweenSteps = stepProgress - currentIndex;
     
-    let gradientStyle;
+    // Get colors safely
+    const currentColor = journeySteps[currentIndex]?.color || '#0EA5E9'; // Fallback to blue
+    const nextColor = journeySteps[nextIndex]?.color || currentColor;
     
-    // Safety checks to prevent undefined access
-    if (currentIndex < 0 || currentIndex >= totalSteps) {
-      gradientStyle = journeySteps[0].color; // Fallback to first step color
-    } else if (currentIndex === nextIndex) {
-      // If we're at the last step, just use that color
-      gradientStyle = journeySteps[currentIndex].color;
+    // Create appropriate style
+    let backgroundStyle;
+    
+    // If at the last step or current equals next, use solid color
+    if (currentIndex === nextIndex) {
+      backgroundStyle = currentColor;
     } else {
-      // Interpolate between current and next color
-      gradientStyle = `linear-gradient(to bottom, 
-        ${journeySteps[currentIndex].color} 0%, 
-        ${journeySteps[currentIndex].color} ${(1 - progressBetweenSteps) * 100}%, 
-        ${journeySteps[nextIndex].color} 100%)`;
+      // Create gradient between current and next color
+      backgroundStyle = `linear-gradient(to bottom, 
+        ${currentColor} 0%, 
+        ${currentColor} ${(1 - progressBetweenSteps) * 100}%, 
+        ${nextColor} 100%)`;
     }
-
+    
     return {
-      background: gradientStyle,
+      background: backgroundStyle,
       height: `${Math.max(0, Math.min(100, scrollProgress * 100))}%`,
       transition: 'height 0.3s ease-out, background 0.5s ease-in-out'
     };
@@ -289,14 +317,14 @@ const TransformationJourneySection: React.FC = () => {
                 <div 
                   className={cn(
                     "absolute left-0 top-0 flex items-center justify-center w-8 h-8 rounded-full border-2 z-10 transition-all duration-500",
-                    scrollProgress > index / journeySteps.length ? 
+                    scrollProgress > (index / journeySteps.length) ? 
                       `scale-125 ${step.baseColorClass} border-transparent` : 
                       "bg-white border-gray-200"
                   )}
                 >
                   <div className={cn(
                     "w-4 h-4 rounded-full transition-all duration-500",
-                    scrollProgress > index / journeySteps.length ? 
+                    scrollProgress > (index / journeySteps.length) ? 
                       "scale-100 bg-white" : "scale-0"
                   )} />
                 </div>
