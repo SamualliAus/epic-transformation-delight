@@ -34,7 +34,7 @@ const HeroSection: React.FC = () => {
             Make transformation, delightful.
           </h1>
           
-          <p className="text-xl md:text-2xl text-gray-700 mb-10 max-w-2xl">Thriving in a complex world can be messy, frustrating and challenging. With over 10+ years of experience and over 100+ organisations satisfied around the world, EPiC's bite-sized transformation accelerators aim to do one thing, delight.</p>
+          <p className="text-xl md:text-2xl text-gray-700 mb-10 max-w-2xl">Thriving in a complex world can be messy, frustrating and challenging. With over 10+ years of experience and over 100+ organisations satisfied around the world, EPiC's bite-sized transformation accelerators aim to do one thing. Delight fast.</p>
 
           <div className="flex flex-col sm:flex-row gap-4">
             <Button className="btn-primary text-lg group" onClick={() => window.location.href = '/accelerators'}>
