@@ -1,7 +1,6 @@
 
 import React, { useRef, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import { Circle, Flag, Award, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 interface JourneyStep {
@@ -13,9 +12,12 @@ interface JourneyStep {
     name: string;
     color: 'blue' | 'orange' | 'yellow' | 'green';
     description: string;
+    category: 'Make More' | 'Spend Less' | 'Build Culture';
   }>;
   targetAudience: string;
-  icon: React.ReactNode;
+  color: string;
+  baseColorClass: string;
+  textColorClass: string;
 }
 
 const journeySteps: JourneyStep[] = [{
@@ -24,45 +26,53 @@ const journeySteps: JourneyStep[] = [{
   description: "When you're overloaded, unclear, or unable to move.",
   extendedDescription: "You know something's not working—but it's hard to see why. This is where we help you surface the root issues, remove blockers, and start flowing again.",
   accelerators: [
-    { name: "Value Flow", color: "orange", description: "Unclog bottlenecks so value moves freely." },
-    { name: "Team OS", color: "green", description: "Turn group potential into team performance." }
+    { name: "Value Flow", color: "orange", description: "Unclog bottlenecks so value moves freely.", category: "Spend Less" },
+    { name: "Team OS", color: "green", description: "Turn group potential into team performance.", category: "Build Culture" }
   ],
   targetAudience: "Perfect for teams overloaded with work, unclear priorities, or disconnected delivery.",
-  icon: <Circle className="w-8 h-8 text-epic-blue" />
+  color: "#0EA5E9", // Blue
+  baseColorClass: "bg-epic-blue",
+  textColorClass: "text-epic-blue"
 }, {
   level: 2,
   title: "Culture",
   description: "When your values, behaviours, and outcomes don't align.",
   extendedDescription: "This is where you rewire how your people show up—together. It's about reigniting shared purpose, improving leadership, and building rituals that make culture contagious.",
   accelerators: [
-    { name: "Sharp Strategy", color: "blue", description: "Make smarter product bets, faster." },
-    { name: "Culture Ignition", color: "green", description: "Align beliefs and rituals so people lead the change." },
-    { name: "Confident Delivery", color: "yellow", description: "Get the right things done, reliably." }
+    { name: "Sharp Strategy", color: "blue", description: "Make smarter product bets, faster.", category: "Make More" },
+    { name: "Culture Ignition", color: "green", description: "Align beliefs and rituals so people lead the change.", category: "Build Culture" },
+    { name: "Confident Delivery", color: "yellow", description: "Get the right things done, reliably.", category: "Spend Less" }
   ],
   targetAudience: "For organisations struggling with misalignment, inconsistent leadership, or low trust in delivery.",
-  icon: <Flag className="w-8 h-8 text-epic-orange" />
+  color: "#F97316", // Coral/Orange
+  baseColorClass: "bg-epic-orange",
+  textColorClass: "text-epic-orange"
 }, {
   level: 3,
   title: "Efficiencies",
   description: "When the way you work no longer works.",
   extendedDescription: "You're making progress, but there's friction—silos, handoffs, shadow work. Now's the time to redesign structures and empower your leaders and teams to scale impact.",
   accelerators: [
-    { name: "Smart Structure", color: "yellow", description: "Rebuild how you work to match what you want to achieve." },
-    { name: "Lead Boldly", color: "green", description: "Help leaders step up and shape what's next." }
+    { name: "Smart Structure", color: "yellow", description: "Rebuild how you work to match what you want to achieve.", category: "Spend Less" },
+    { name: "Lead Boldly", color: "green", description: "Help leaders step up and shape what's next.", category: "Build Culture" }
   ],
   targetAudience: "For teams bogged down in bureaucracy, duplicated effort, or unclear ownership.",
-  icon: <Award className="w-8 h-8 text-epic-yellow" />
+  color: "#FEC84B", // Yellow
+  baseColorClass: "bg-epic-yellow",
+  textColorClass: "text-epic-yellow"
 }, {
   level: 4,
   title: "Optimisation",
   description: "When you're ready to scale what works—and unlock what's hidden.",
   extendedDescription: "You've built the foundation. Now it's about deepening your advantage—by aligning around real value and safely scaling innovation like AI.",
   accelerators: [
-    { name: "Real AI", color: "blue", description: "Scale AI safely, not speculatively." },
-    { name: "Hidden Gold", color: "blue", description: "Find untapped value in the work you already do." }
+    { name: "Real AI", color: "blue", description: "Scale AI safely, not speculatively.", category: "Make More" },
+    { name: "Hidden Gold", color: "blue", description: "Find untapped value in the work you already do.", category: "Make More" }
   ],
   targetAudience: "Ideal for orgs with solid fundamentals who want to shift from good to great.",
-  icon: <Star className="w-8 h-8 text-epic-green" />
+  color: "#4ADE80", // Green
+  baseColorClass: "bg-epic-green",
+  textColorClass: "text-epic-green"
 }];
 
 const TransformationJourneySection: React.FC = () => {
@@ -70,6 +80,7 @@ const TransformationJourneySection: React.FC = () => {
   const lineRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = React.useState(false);
   const [scrollProgress, setScrollProgress] = React.useState(0);
+  const [activeStepIndex, setActiveStepIndex] = React.useState(0);
 
   useEffect(() => {
     const observer = new IntersectionObserver(([entry]) => {
@@ -97,6 +108,13 @@ const TransformationJourneySection: React.FC = () => {
             (viewportHeight - sectionTop) / (viewportHeight + sectionHeight * 0.7)
           ));
           setScrollProgress(progress);
+          
+          // Determine active step based on scroll position
+          const newActiveIndex = Math.min(
+            journeySteps.length - 1,
+            Math.floor(progress * journeySteps.length)
+          );
+          setActiveStepIndex(newActiveIndex);
         }
       }
     };
@@ -132,6 +150,31 @@ const TransformationJourneySection: React.FC = () => {
       default: return '⚪';
     }
   };
+  
+  // Get the category class for accelerator cards
+  const getCategoryColorClass = (category: string): string => {
+    switch (category) {
+      case 'Make More': return 'from-epic-blue/20 to-epic-blue/10 border-epic-blue/30';
+      case 'Spend Less': return 'from-epic-yellow/20 to-epic-yellow/10 border-epic-yellow/30';
+      case 'Build Culture': return 'from-epic-green/20 to-epic-green/10 border-epic-green/30';
+      default: return 'from-epic-blue/20 to-epic-blue/10 border-epic-blue/30';
+    }
+  };
+
+  // Get current line color based on active step
+  const getLineGradientStyle = () => {
+    const { color } = journeySteps[activeStepIndex];
+    // Create a gradient that transitions between the step colors
+    return {
+      background: `linear-gradient(to bottom, ${journeySteps.map((step, i) => {
+        // Calculate position based on scroll progress
+        const position = i / (journeySteps.length - 1) * 100;
+        return `${step.color} ${position}%`;
+      }).join(', ')})`,
+      height: `${scrollProgress * 100}%`,
+      transition: 'height 0.5s ease-out'
+    };
+  };
 
   return <section ref={sectionRef} id="transformation-journey" className="py-24 bg-gradient-to-br from-gray-50 to-white relative overflow-hidden">
       <div className="absolute inset-0 -z-10">
@@ -164,48 +207,58 @@ const TransformationJourneySection: React.FC = () => {
         <div className="relative max-w-4xl mx-auto">
           {/* Vertical connecting line */}
           <div className="absolute left-4 top-8 bottom-8 w-0.5 bg-gray-200">
-            <div ref={lineRef} className="bg-gradient-to-b from-epic-blue via-epic-orange to-epic-green w-full" style={{
-            height: `${scrollProgress * 100}%`,
-            transition: 'height 0.5s ease-out'
-          }} />
+            <div ref={lineRef} style={getLineGradientStyle()} />
           </div>
 
           <div className="space-y-24 pb-16">
             {journeySteps.map((step, index) => <div key={index} className={cn("relative flex items-start opacity-0", isVisible && "animate-fade-in")} style={{
             animationDelay: `${0.2 * index}s`
           }}>
-                <div className={cn("absolute left-0 top-0 flex items-center justify-center w-8 h-8 rounded-full bg-white border-2 border-gray-200 z-10 transition-transform duration-300", scrollProgress > index / journeySteps.length * 0.8 && "scale-125 border-epic-blue")}>
-                  <div className={cn("opacity-0 transform scale-0", scrollProgress > index / journeySteps.length * 0.8 && "opacity-100 scale-100 transition-all duration-500")}>
-                    {step.icon}
-                  </div>
+                <div className={cn(
+                  "absolute left-0 top-0 flex items-center justify-center w-8 h-8 rounded-full bg-white border-2 border-gray-200 z-10 transition-all duration-300", 
+                  scrollProgress > index / journeySteps.length * 0.8 && `scale-125 border-2 ${step.baseColorClass}`
+                )}>
                 </div>
                 
                 <div className="ml-16 max-w-3xl">
-                  <span className="text-sm font-medium text-epic-blue">Level {step.level}</span>
-                  <h3 className="text-2xl font-bold mb-2">{step.title}</h3>
+                  <span className={cn("text-sm font-medium", step.textColorClass)}>Level {step.level}</span>
+                  <h3 className={cn("text-2xl font-bold mb-2", step.textColorClass)}>{step.title}</h3>
                   <p className="text-lg font-semibold text-gray-800 mb-3">{step.description}</p>
                   <p className="text-gray-600 mb-4">{step.extendedDescription}</p>
                   
                   <div className="mt-4 mb-4">
                     <h4 className="text-sm font-semibold uppercase text-gray-500 mb-2">Accelerators to {index === 0 ? "start with" : index === 1 ? "explore" : index === 2 ? "apply" : "launch"}:</h4>
-                    <ul className="space-y-2 mb-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
                       {step.accelerators.map((accelerator, accIndex) => (
-                        <li key={accIndex} className="flex items-start">
-                          <span className="mr-2">{getColorEmoji(accelerator.color)}</span>
-                          <div>
-                            <span className={`font-medium ${getColorClass(accelerator.color)}`}>{accelerator.name}</span>
-                            <span className="mx-2">–</span>
-                            <span className="text-gray-600">{accelerator.description}</span>
-                            <Link 
-                              to="/accelerators" 
-                              className="ml-2 text-sm text-epic-blue hover:text-epic-orange inline-flex items-center"
-                            >
-                              Learn more →
-                            </Link>
+                        <div 
+                          key={accIndex}
+                          className={cn(
+                            "p-4 rounded-lg border bg-gradient-to-br transition-all duration-300 hover:shadow-md",
+                            getCategoryColorClass(accelerator.category),
+                            "transform hover:scale-[1.02] cursor-pointer"
+                          )}
+                        >
+                          <div className="flex items-start space-x-2">
+                            <span className="mt-1">{getColorEmoji(accelerator.color)}</span>
+                            <div>
+                              <span className={`font-medium ${getColorClass(accelerator.color)}`}>{accelerator.name}</span>
+                              <p className="text-gray-600 text-sm mt-1">{accelerator.description}</p>
+                              <div className="mt-2">
+                                <span className="text-xs font-medium px-2 py-1 rounded-full bg-white/50 border border-gray-200 inline-block">
+                                  {accelerator.category}
+                                </span>
+                                <Link 
+                                  to="/accelerators" 
+                                  className="ml-2 text-xs text-epic-blue hover:text-epic-orange inline-flex items-center"
+                                >
+                                  Learn more →
+                                </Link>
+                              </div>
+                            </div>
                           </div>
-                        </li>
+                        </div>
                       ))}
-                    </ul>
+                    </div>
                   </div>
                   
                   <p className="text-sm text-gray-500 italic">{step.targetAudience}</p>
