@@ -203,6 +203,16 @@
       background-position: 0% 50%;
     }
   }
+
+  /* New animation for the journey section */
+  .journey-line {
+    height: 0;
+    transition: height 0.8s ease-out;
+  }
+  
+  .journey-line.animate {
+    height: 100%;
+  }
 }
 
 .font-inter {

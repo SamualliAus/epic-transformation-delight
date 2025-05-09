@@ -3,7 +3,8 @@ import React, { useEffect } from 'react';
 import Navigation from '../components/Navigation';
 import HeroSection from '../components/HeroSection';
 import TrustSection from '../components/TrustSection';
-import FingerprintSection from '../components/FingerprintSection';
+import StrategicOutcomesSection from '../components/StrategicOutcomesSection';
+import TransformationJourneySection from '../components/TransformationJourneySection';
 import AcceleratorsSection from '../components/AcceleratorsSection';
 import TestimonialsSection from '../components/TestimonialsSection';
 import FAQSection from '../components/FAQSection';
@@ -20,7 +21,8 @@ const Index: React.FC = () => {
       <Navigation />
       <HeroSection />
       <TrustSection />
-      <FingerprintSection />
+      <StrategicOutcomesSection />
+      <TransformationJourneySection />
       <AcceleratorsSection />
       <TestimonialsSection />
       <FAQSection />

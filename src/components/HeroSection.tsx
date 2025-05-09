@@ -23,24 +23,25 @@ const HeroSection: React.FC = () => {
   };
 
   return (
-    <section className="relative min-h-screen flex flex-col items-center justify-center pt-20 pb-10 overflow-hidden">
+    <section className="relative min-h-screen flex flex-col justify-center pt-20 pb-10 overflow-hidden">
       <div className="absolute inset-0 -z-10">
         <div className="absolute inset-0 bg-gradient-to-br from-white via-gray-50 to-gray-100 opacity-90"></div>
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-epic-light-blue rounded-full filter blur-3xl opacity-20 animate-float"></div>
         <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-epic-light-orange rounded-full filter blur-3xl opacity-20 animate-float" style={{ animationDelay: '2s' }}></div>
       </div>
       
-      <div className="container-custom flex flex-col items-center z-10">
-        <div className="stagger-animation max-w-4xl mx-auto text-center">
-          <h1 className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-epic-blue via-epic-orange to-epic-yellow mb-6">
+      <div className="container-custom z-10">
+        <div className="stagger-animation max-w-4xl">
+          <p className="text-sm font-medium text-epic-blue mb-2">AN EVOLUTIONARY NEW APPROACH TO</p>
+          <h1 className="font-extrabold text-left text-transparent bg-clip-text bg-gradient-to-r from-epic-blue via-epic-orange to-epic-yellow mb-6">
             Make transformation, delightful.
           </h1>
           
-          <p className="text-xl md:text-2xl text-gray-700 mb-10 max-w-3xl mx-auto">
+          <p className="text-xl md:text-2xl text-gray-700 mb-10 max-w-2xl">
             Transformation doesn't have to drain your people or drown in complexity. EPiC helps ambitious organisations create space for lasting change—through targeted Accelerators and sharp, energising Masterclasses.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-4">
             <Button 
               className="btn-primary text-lg group"
               onClick={() => window.location.href = '/accelerators'}
@@ -74,17 +75,6 @@ const HeroSection: React.FC = () => {
               </svg>
             </Button>
           </div>
-        </div>
-
-        <div className={cn(
-          "mt-20 w-64 h-64 relative transition-all duration-1000",
-          isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"
-        )}>
-          <img 
-            src="/lovable-uploads/bb9810e9-26ef-47a4-a942-7a5ecc06e478.png" 
-            alt="EPiC Fingerprint" 
-            className="w-full h-full object-contain"
-          />
         </div>
       </div>
 
