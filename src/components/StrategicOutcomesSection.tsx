@@ -6,7 +6,7 @@ import { ChartBar, Layers, Users } from 'lucide-react';
 
 interface OutcomeCard {
   title: string;
-  color: 'blue' | 'yellow' | 'green';
+  color: 'blue' | 'yellow' | 'coral';
   icon: React.ReactNode;
   description: string;
   accelerators: string[];
@@ -29,8 +29,8 @@ const outcomes: OutcomeCard[] = [
   }, 
   {
     title: 'Build Culture',
-    color: 'green',
-    icon: <Users className="w-8 h-8 text-epic-green" />,
+    color: 'coral',
+    icon: <Users className="w-8 h-8 text-epic-coral" />,
     description: 'Elevate how your people work, lead, and grow together.',
     accelerators: ['Team OS', 'Culture Ignition', 'Lead Boldly']
   }
@@ -67,8 +67,8 @@ const StrategicOutcomesSection: React.FC = () => {
         return 'border-t-epic-blue hover:shadow-epic-blue/20 from-epic-blue/5 to-white';
       case 'yellow':
         return 'border-t-epic-yellow hover:shadow-epic-yellow/20 from-epic-yellow/5 to-white';
-      case 'green':
-        return 'border-t-epic-green hover:shadow-epic-green/20 from-epic-green/5 to-white';
+      case 'coral':
+        return 'border-t-epic-coral hover:shadow-epic-coral/20 from-epic-coral/5 to-white';
       default:
         return 'border-t-epic-blue hover:shadow-epic-blue/20 from-epic-blue/5 to-white';
     }
