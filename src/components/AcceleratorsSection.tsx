@@ -109,13 +109,13 @@ const AcceleratorsSection: React.FC = () => {
   const getCategoryGradientClasses = (category: AcceleratorCard['category']) => {
     switch (category) {
       case 'Make More':
-        return 'from-epic-blue to-epic-blue/60 hover:from-epic-blue/80 hover:to-epic-blue/40';
+        return 'bg-gradient-to-r from-epic-blue via-epic-blue/80 to-epic-blue/60 hover:from-epic-blue hover:via-epic-blue/70 hover:to-epic-blue/50 transition-all duration-300';
       case 'Spend Less':
-        return 'from-epic-yellow to-epic-yellow/60 hover:from-epic-yellow/80 hover:to-epic-yellow/40';
+        return 'bg-gradient-to-r from-epic-yellow via-epic-yellow/80 to-epic-yellow/60 hover:from-epic-yellow hover:via-epic-yellow/70 hover:to-epic-yellow/50 transition-all duration-300';
       case 'Build Culture':
-        return 'from-epic-green to-epic-green/60 hover:from-epic-green/80 hover:to-epic-green/40';
+        return 'bg-gradient-to-r from-epic-green via-epic-green/80 to-epic-green/60 hover:from-epic-green hover:via-epic-green/70 hover:to-epic-green/50 transition-all duration-300';
       default:
-        return 'from-epic-blue to-epic-blue/60 hover:from-epic-blue/80 hover:to-epic-blue/40';
+        return 'bg-gradient-to-r from-epic-blue via-epic-blue/80 to-epic-blue/60 hover:from-epic-blue hover:via-epic-blue/70 hover:to-epic-blue/50 transition-all duration-300';
     }
   };
 
@@ -123,13 +123,13 @@ const AcceleratorsSection: React.FC = () => {
   const getCategoryBorderGradient = (category: AcceleratorCard['category']) => {
     switch (category) {
       case 'Make More':
-        return 'border-t-[#0EA5E9]';
+        return 'border-t-transparent before:absolute before:inset-x-0 before:top-0 before:h-1 before:bg-gradient-to-r before:from-epic-blue before:to-epic-light-blue';
       case 'Spend Less':
-        return 'border-t-[#FEC84B]';
+        return 'border-t-transparent before:absolute before:inset-x-0 before:top-0 before:h-1 before:bg-gradient-to-r before:from-epic-yellow before:to-epic-light-yellow';
       case 'Build Culture':
-        return 'border-t-[#4ADE80]';
+        return 'border-t-transparent before:absolute before:inset-x-0 before:top-0 before:h-1 before:bg-gradient-to-r before:from-epic-green before:to-epic-light-green';
       default:
-        return 'border-t-[#0EA5E9]';
+        return 'border-t-transparent before:absolute before:inset-x-0 before:top-0 before:h-1 before:bg-gradient-to-r before:from-epic-blue before:to-epic-light-blue';
     }
   };
 
@@ -137,13 +137,13 @@ const AcceleratorsSection: React.FC = () => {
   const getTagGradientClasses = (category: AcceleratorCard['category']) => {
     switch (category) {
       case 'Make More':
-        return 'bg-gradient-to-r from-epic-light-blue to-epic-blue/20 text-epic-blue';
+        return 'bg-gradient-to-r from-epic-light-blue/40 to-epic-light-blue/20 text-epic-blue border border-epic-blue/20';
       case 'Spend Less':
-        return 'bg-gradient-to-r from-epic-light-yellow to-epic-yellow/20 text-epic-yellow';
+        return 'bg-gradient-to-r from-epic-light-yellow/40 to-epic-light-yellow/20 text-epic-yellow border border-epic-yellow/20';
       case 'Build Culture':
-        return 'bg-gradient-to-r from-epic-light-green to-epic-green/20 text-epic-green';
+        return 'bg-gradient-to-r from-epic-light-green/40 to-epic-light-green/20 text-epic-green border border-epic-green/20';
       default:
-        return 'bg-gradient-to-r from-epic-light-blue to-epic-blue/20 text-epic-blue';
+        return 'bg-gradient-to-r from-epic-light-blue/40 to-epic-light-blue/20 text-epic-blue border border-epic-blue/20';
     }
   };
 
@@ -151,7 +151,7 @@ const AcceleratorsSection: React.FC = () => {
     <section 
       ref={sectionRef}
       id="accelerators" 
-      className="py-20 bg-white"
+      className="py-20 bg-gradient-to-b from-white to-gray-50"
     >
       <div className="container-custom">
         <div className="max-w-3xl mx-auto mb-12 text-center">
@@ -176,20 +176,21 @@ const AcceleratorsSection: React.FC = () => {
             <Card 
               key={index} 
               className={cn(
-                "transition-all duration-500 hover:transform hover:translate-y-[-8px] border-t-4 hover:shadow-xl opacity-0 cursor-pointer bg-gradient-to-br from-white to-gray-50",
+                "transition-all duration-500 hover:transform hover:translate-y-[-8px] hover:shadow-xl opacity-0 cursor-pointer relative overflow-hidden",
                 getCategoryBorderGradient(accelerator.category),
                 isVisible && "animate-scale-in"
               )}
               style={{ animationDelay: `${0.1 * index}s` }}
               onClick={() => window.location.href = accelerator.path}
             >
-              <CardHeader>
+              <div className="absolute inset-0 bg-gradient-to-br from-white via-white to-gray-50 opacity-90 z-0"></div>
+              <CardHeader className="relative z-10">
                 <CardTitle>{accelerator.title}</CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="relative z-10">
                 <p className="text-gray-600">{accelerator.description}</p>
               </CardContent>
-              <CardFooter className="flex flex-col items-start">
+              <CardFooter className="flex flex-col items-start relative z-10">
                 <div className="flex flex-wrap gap-2 mb-4">
                   <Badge variant="secondary" className={cn(getTagGradientClasses(accelerator.category))}>
                     {accelerator.category}
@@ -198,7 +199,7 @@ const AcceleratorsSection: React.FC = () => {
                 <div className="flex justify-between items-center w-full mt-2">
                   <span className="text-sm text-gray-500">12-week program</span>
                   <div className={cn(
-                    "flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-r", 
+                    "flex items-center justify-center w-8 h-8 rounded-full", 
                     getCategoryGradientClasses(accelerator.category)
                   )}>
                     <ArrowRight size={18} className="text-white" />
