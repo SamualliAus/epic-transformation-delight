@@ -73,7 +73,7 @@ const accelerators: AcceleratorCard[] = [
   },
   {
     title: 'Lead Boldly',
-    description: 'Help leaders step up and shape what's next.',
+    description: 'Help leaders step up and shape what\'s next.',
     category: 'Build Culture',
     color: 'green',
     path: '/accelerators/lead-boldly'
