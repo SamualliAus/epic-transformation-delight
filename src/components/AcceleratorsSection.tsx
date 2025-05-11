@@ -8,54 +8,76 @@ import { ArrowRight } from 'lucide-react';
 interface AcceleratorCard {
   title: string;
   description: string;
-  tags: string[];
-  color: 'blue' | 'orange' | 'yellow' | 'green';
+  category: 'Make More' | 'Spend Less' | 'Build Culture';
+  color: 'blue' | 'yellow' | 'green';
   path: string;
 }
 
+// Updated accelerator data to match those in the TransformationJourneySection
 const accelerators: AcceleratorCard[] = [
   {
-    title: 'Team Alignment',
-    description: 'Create high-performing teams with clear purpose and streamlined collaboration.',
-    tags: ['Leadership', 'Collaboration', 'Communication'],
+    title: 'Sharp Strategy',
+    description: 'Make smarter product bets, faster.',
+    category: 'Make More',
     color: 'blue',
-    path: '/accelerators/team-alignment'
+    path: '/accelerators/sharp-strategy'
   },
   {
-    title: 'Process Optimization',
-    description: 'Identify and eliminate operational friction points to accelerate delivery.',
-    tags: ['Efficiency', 'Workflows', 'Automation'],
-    color: 'orange',
-    path: '/accelerators/process-optimization'
-  },
-  {
-    title: 'Innovation Systems',
-    description: 'Build frameworks that turn ideas into validated solutions, faster.',
-    tags: ['Creativity', 'Implementation', 'Growth'],
+    title: 'Value Flow',
+    description: 'Unclog bottlenecks so value moves freely.',
+    category: 'Spend Less',
     color: 'yellow',
-    path: '/accelerators/innovation-systems'
+    path: '/accelerators/value-flow'
   },
   {
-    title: 'Digital Enablement',
-    description: 'Leverage technology to enhance human capability, not replace it.',
-    tags: ['Technology', 'Integration', 'Skills'],
+    title: 'Team OS',
+    description: 'Turn group potential into team performance.',
+    category: 'Build Culture',
     color: 'green',
-    path: '/accelerators/digital-enablement'
+    path: '/accelerators/team-os'
   },
   {
-    title: 'Leadership Coaching',
-    description: 'Develop leaders who can navigate complexity and inspire meaningful change.',
-    tags: ['Mentoring', 'Strategy', 'Vision'],
+    title: 'Confident Delivery',
+    description: 'Get the right things done, reliably.',
+    category: 'Spend Less',
+    color: 'yellow',
+    path: '/accelerators/confident-delivery'
+  },
+  {
+    title: 'Culture Ignition',
+    description: 'Align beliefs and rituals so people lead the change.',
+    category: 'Build Culture',
+    color: 'green',
+    path: '/accelerators/culture-ignition'
+  },
+  {
+    title: 'Real AI',
+    description: 'Scale AI safely, not speculatively.',
+    category: 'Make More',
     color: 'blue',
-    path: '/accelerators/leadership-coaching'
+    path: '/accelerators/real-ai'
   },
   {
-    title: 'Culture Evolution',
-    description: 'Shape organizational behaviors that support sustainable transformation.',
-    tags: ['Values', 'Behaviors', 'Engagement'],
-    color: 'orange',
-    path: '/accelerators/culture-evolution'
+    title: 'Hidden Gold',
+    description: 'Find untapped value in the work you already do.',
+    category: 'Make More',
+    color: 'blue',
+    path: '/accelerators/hidden-gold'
   },
+  {
+    title: 'Smart Structure',
+    description: 'Rebuild how you work to match what you want to achieve.',
+    category: 'Spend Less',
+    color: 'yellow',
+    path: '/accelerators/smart-structure'
+  },
+  {
+    title: 'Lead Boldly',
+    description: 'Help leaders step up and shape what's next.',
+    category: 'Build Culture',
+    color: 'green',
+    path: '/accelerators/lead-boldly'
+  }
 ];
 
 const AcceleratorsSection: React.FC = () => {
@@ -83,33 +105,45 @@ const AcceleratorsSection: React.FC = () => {
     };
   }, []);
 
-  const getColorClasses = (color: AcceleratorCard['color']) => {
-    switch (color) {
-      case 'blue':
-        return 'border-t-epic-blue hover:shadow-epic-blue/20';
-      case 'orange':
-        return 'border-t-epic-orange hover:shadow-epic-orange/20';
-      case 'yellow':
-        return 'border-t-epic-yellow hover:shadow-epic-yellow/20';
-      case 'green':
-        return 'border-t-epic-green hover:shadow-epic-green/20';
+  // Get category-specific gradient styles
+  const getCategoryGradientClasses = (category: AcceleratorCard['category']) => {
+    switch (category) {
+      case 'Make More':
+        return 'from-epic-blue to-epic-blue/60 hover:from-epic-blue/80 hover:to-epic-blue/40';
+      case 'Spend Less':
+        return 'from-epic-yellow to-epic-yellow/60 hover:from-epic-yellow/80 hover:to-epic-yellow/40';
+      case 'Build Culture':
+        return 'from-epic-green to-epic-green/60 hover:from-epic-green/80 hover:to-epic-green/40';
       default:
-        return 'border-t-epic-blue hover:shadow-epic-blue/20';
+        return 'from-epic-blue to-epic-blue/60 hover:from-epic-blue/80 hover:to-epic-blue/40';
     }
   };
 
-  const getTagColorClasses = (color: AcceleratorCard['color']) => {
-    switch (color) {
-      case 'blue':
-        return 'bg-epic-light-blue text-epic-blue';
-      case 'orange':
-        return 'bg-epic-light-orange text-epic-orange';
-      case 'yellow':
-        return 'bg-epic-light-yellow text-epic-yellow';
-      case 'green':
-        return 'bg-epic-light-green text-epic-green';
+  // Get category-specific gradient styles for the border
+  const getCategoryBorderGradient = (category: AcceleratorCard['category']) => {
+    switch (category) {
+      case 'Make More':
+        return 'border-t-[#0EA5E9]';
+      case 'Spend Less':
+        return 'border-t-[#FEC84B]';
+      case 'Build Culture':
+        return 'border-t-[#4ADE80]';
       default:
-        return 'bg-epic-light-blue text-epic-blue';
+        return 'border-t-[#0EA5E9]';
+    }
+  };
+
+  // Get tag color classes with gradients
+  const getTagGradientClasses = (category: AcceleratorCard['category']) => {
+    switch (category) {
+      case 'Make More':
+        return 'bg-gradient-to-r from-epic-light-blue to-epic-blue/20 text-epic-blue';
+      case 'Spend Less':
+        return 'bg-gradient-to-r from-epic-light-yellow to-epic-yellow/20 text-epic-yellow';
+      case 'Build Culture':
+        return 'bg-gradient-to-r from-epic-light-green to-epic-green/20 text-epic-green';
+      default:
+        return 'bg-gradient-to-r from-epic-light-blue to-epic-blue/20 text-epic-blue';
     }
   };
 
@@ -122,7 +156,7 @@ const AcceleratorsSection: React.FC = () => {
       <div className="container-custom">
         <div className="max-w-3xl mx-auto mb-12 text-center">
           <h2 className={cn(
-            "mb-6 opacity-0",
+            "mb-6 opacity-0 animated-gradient-text",
             isVisible && "animate-fade-in"
           )}>
             Our 3-Month Problem-Solving Incubators
@@ -142,8 +176,8 @@ const AcceleratorsSection: React.FC = () => {
             <Card 
               key={index} 
               className={cn(
-                "transition-all duration-500 hover:transform hover:translate-y-[-8px] border-t-4 hover:shadow-xl opacity-0 cursor-pointer",
-                getColorClasses(accelerator.color),
+                "transition-all duration-500 hover:transform hover:translate-y-[-8px] border-t-4 hover:shadow-xl opacity-0 cursor-pointer bg-gradient-to-br from-white to-gray-50",
+                getCategoryBorderGradient(accelerator.category),
                 isVisible && "animate-scale-in"
               )}
               style={{ animationDelay: `${0.1 * index}s` }}
@@ -157,15 +191,18 @@ const AcceleratorsSection: React.FC = () => {
               </CardContent>
               <CardFooter className="flex flex-col items-start">
                 <div className="flex flex-wrap gap-2 mb-4">
-                  {accelerator.tags.map((tag, tagIndex) => (
-                    <Badge key={tagIndex} variant="secondary" className={cn(getTagColorClasses(accelerator.color))}>
-                      {tag}
-                    </Badge>
-                  ))}
+                  <Badge variant="secondary" className={cn(getTagGradientClasses(accelerator.category))}>
+                    {accelerator.category}
+                  </Badge>
                 </div>
                 <div className="flex justify-between items-center w-full mt-2">
                   <span className="text-sm text-gray-500">12-week program</span>
-                  <ArrowRight size={18} className="text-gray-500" />
+                  <div className={cn(
+                    "flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-r", 
+                    getCategoryGradientClasses(accelerator.category)
+                  )}>
+                    <ArrowRight size={18} className="text-white" />
+                  </div>
                 </div>
               </CardFooter>
             </Card>

@@ -20,6 +20,7 @@ type JourneyStepData = {
   color: string;
   baseColorClass: string;
   textColorClass: string;
+  gradientClass: string;
 };
 
 const journeySteps: JourneyStepData[] = [
@@ -29,13 +30,14 @@ const journeySteps: JourneyStepData[] = [
     description: "When you're overloaded, unclear, or unable to move.",
     extendedDescription: "You know something's not working—but it's hard to see why. This is where we help you surface the root issues, remove blockers, and start flowing again.",
     accelerators: [
-      { name: "Value Flow", color: "orange", description: "Unclog bottlenecks so value moves freely.", category: "Spend Less" },
+      { name: "Value Flow", color: "yellow", description: "Unclog bottlenecks so value moves freely.", category: "Spend Less" },
       { name: "Team OS", color: "green", description: "Turn group potential into team performance.", category: "Build Culture" }
     ],
     targetAudience: "Perfect for teams overloaded with work, unclear priorities, or disconnected delivery.",
     color: "#0EA5E9", // Blue
     baseColorClass: "bg-epic-blue",
-    textColorClass: "text-epic-blue"
+    textColorClass: "text-epic-blue",
+    gradientClass: "bg-gradient-to-r from-epic-blue to-epic-blue/70"
   },
   {
     level: 2,
@@ -50,7 +52,8 @@ const journeySteps: JourneyStepData[] = [
     targetAudience: "For organisations struggling with misalignment, inconsistent leadership, or low trust in delivery.",
     color: "#F97316", // Coral/Orange
     baseColorClass: "bg-epic-orange",
-    textColorClass: "text-epic-orange"
+    textColorClass: "text-epic-orange",
+    gradientClass: "bg-gradient-to-r from-epic-orange to-epic-orange/70"
   },
   {
     level: 3,
@@ -64,7 +67,8 @@ const journeySteps: JourneyStepData[] = [
     targetAudience: "For teams bogged down in bureaucracy, duplicated effort, or unclear ownership.",
     color: "#FEC84B", // Yellow
     baseColorClass: "bg-epic-yellow",
-    textColorClass: "text-epic-yellow"
+    textColorClass: "text-epic-yellow",
+    gradientClass: "bg-gradient-to-r from-epic-yellow to-epic-yellow/70"
   },
   {
     level: 4,
@@ -78,7 +82,8 @@ const journeySteps: JourneyStepData[] = [
     targetAudience: "Ideal for orgs with solid fundamentals who want to shift from good to great.",
     color: "#4ADE80", // Green
     baseColorClass: "bg-epic-green",
-    textColorClass: "text-epic-green"
+    textColorClass: "text-epic-green",
+    gradientClass: "bg-gradient-to-r from-epic-green to-epic-green/70"
   }
 ];
 
@@ -122,8 +127,18 @@ const TransformationJourneySection: React.FC = () => {
     }, 300);
   }, [activeStep]);
 
-  // Helper function for color classes
-  const getColorClass = (color: string): string => {
+  // Helper function for color classes with gradients
+  const getColorGradientClass = (color: string): string => {
+    switch (color) {
+      case 'blue': return 'bg-gradient-to-r from-epic-blue to-epic-blue/70 text-white';
+      case 'orange': return 'bg-gradient-to-r from-epic-orange to-epic-orange/70 text-white';
+      case 'yellow': return 'bg-gradient-to-r from-epic-yellow to-epic-yellow/70 text-white';
+      case 'green': return 'bg-gradient-to-r from-epic-green to-epic-green/70 text-white';
+      default: return 'bg-gradient-to-r from-epic-blue to-epic-blue/70 text-white';
+    }
+  };
+  
+  const getTextColorClass = (color: string): string => {
     switch (color) {
       case 'blue': return 'text-epic-blue';
       case 'orange': return 'text-epic-orange';
@@ -133,12 +148,21 @@ const TransformationJourneySection: React.FC = () => {
     }
   };
   
-  const getCategoryColorClass = (category: string): string => {
+  const getCategoryGradientClass = (category: string): string => {
     switch (category) {
-      case 'Make More': return 'from-epic-blue/20 to-epic-blue/10 border-epic-blue/30';
-      case 'Spend Less': return 'from-epic-yellow/20 to-epic-yellow/10 border-epic-yellow/30';
-      case 'Build Culture': return 'from-epic-green/20 to-epic-green/10 border-epic-green/30';
-      default: return 'from-epic-blue/20 to-epic-blue/10 border-epic-blue/30';
+      case 'Make More': return 'from-epic-blue/20 to-epic-blue/5 border-epic-blue/30';
+      case 'Spend Less': return 'from-epic-yellow/20 to-epic-yellow/5 border-epic-yellow/30';
+      case 'Build Culture': return 'from-epic-green/20 to-epic-green/5 border-epic-green/30';
+      default: return 'from-epic-blue/20 to-epic-blue/5 border-epic-blue/30';
+    }
+  };
+  
+  const getCategoryBadgeGradient = (category: string): string => {
+    switch (category) {
+      case 'Make More': return 'bg-gradient-to-r from-epic-light-blue to-epic-blue/20 text-epic-blue';
+      case 'Spend Less': return 'bg-gradient-to-r from-epic-light-yellow to-epic-yellow/20 text-epic-yellow';
+      case 'Build Culture': return 'bg-gradient-to-r from-epic-light-green to-epic-green/20 text-epic-green';
+      default: return 'bg-gradient-to-r from-epic-light-blue to-epic-blue/20 text-epic-blue';
     }
   };
 
@@ -188,10 +212,9 @@ const TransformationJourneySection: React.FC = () => {
             {/* Path line with gradient */}
             <div className="absolute top-1/2 left-0 right-0 h-2 bg-gray-100 rounded-full -translate-y-1/2 z-0">
               <div 
-                className="absolute top-0 left-0 h-full rounded-full transition-all duration-500"
+                className="absolute top-0 left-0 h-full rounded-full transition-all duration-500 bg-gradient-to-r from-epic-blue via-epic-orange to-epic-green"
                 style={{
                   width: `${(activeStep + 1) / journeySteps.length * 100}%`,
-                  background: `linear-gradient(to right, #0EA5E9, #F97316, #FEC84B, #4ADE80)`
                 }}
               ></div>
             </div>
@@ -202,7 +225,7 @@ const TransformationJourneySection: React.FC = () => {
                 key={index} 
                 className={cn(
                   "w-14 h-14 rounded-full relative z-10 flex items-center justify-center cursor-pointer transition-all duration-300",
-                  index <= activeStep ? step.baseColorClass : "bg-white border-2 border-gray-200",
+                  index <= activeStep ? step.gradientClass : "bg-white border-2 border-gray-200",
                   index === activeStep && "scale-125 shadow-lg",
                 )}
                 onClick={() => handleStepClick(index)}
@@ -226,14 +249,17 @@ const TransformationJourneySection: React.FC = () => {
         <div className="max-w-5xl mx-auto">
           <div 
             className={cn(
-              "transition-all duration-300 bg-white rounded-2xl p-8 shadow-lg border border-gray-100",
+              "transition-all duration-300 bg-gradient-to-br from-white to-gray-50 rounded-2xl p-8 shadow-lg border border-gray-100",
               isAnimating ? "opacity-0 transform translate-y-8" : "opacity-100 transform translate-y-0"
             )}
           >
             <div className="flex flex-col lg:flex-row gap-8">
               {/* Content */}
               <div className="flex-1">
-                <div className={cn("inline-block px-3 py-1 rounded-full text-sm font-medium mb-3", journeySteps[activeStep].baseColorClass, "text-white")}>
+                <div className={cn(
+                  "inline-block px-3 py-1 rounded-full text-sm font-medium mb-3",
+                  journeySteps[activeStep].gradientClass
+                )}>
                   Level {journeySteps[activeStep].level}
                 </div>
                 
@@ -267,13 +293,13 @@ const TransformationJourneySection: React.FC = () => {
                       key={accIndex}
                       className={cn(
                         "block p-4 rounded-lg border bg-gradient-to-br transition-all duration-300",
-                        getCategoryColorClass(accelerator.category),
+                        getCategoryGradientClass(accelerator.category),
                         "hover:shadow-md transform hover:translate-x-1"
                       )}
                     >
                       <div className="flex items-start justify-between">
                         <div>
-                          <span className={cn("font-medium", getColorClass(accelerator.color))}>
+                          <span className={cn("font-medium", getTextColorClass(accelerator.color))}>
                             {accelerator.name}
                           </span>
                           <p className="text-gray-600 text-sm mt-1">
@@ -282,9 +308,7 @@ const TransformationJourneySection: React.FC = () => {
                         </div>
                         <Badge variant="secondary" className={cn(
                           "ml-2 shrink-0",
-                          accelerator.category === "Make More" ? "bg-epic-light-blue text-epic-blue" :
-                          accelerator.category === "Spend Less" ? "bg-epic-light-yellow text-epic-yellow" :
-                          "bg-epic-light-green text-epic-green"
+                          getCategoryBadgeGradient(accelerator.category)
                         )}>
                           {accelerator.category}
                         </Badge>
@@ -313,14 +337,14 @@ const TransformationJourneySection: React.FC = () => {
 
         {/* Journey progress indicator */}
         <div className="max-w-sm mx-auto mt-12 flex justify-between">
-          {journeySteps.map((_, index) => (
+          {journeySteps.map((step, index) => (
             <button
               key={index}
               onClick={() => handleStepClick(index)}
               className={cn(
                 "w-3 h-3 rounded-full transition-all duration-300",
                 index === activeStep ? 
-                  journeySteps[index].baseColorClass : 
+                  step.gradientClass : 
                   "bg-gray-200 hover:bg-gray-300"
               )}
               aria-label={`Go to step ${index + 1}`}
