@@ -59,10 +59,12 @@ export default {
 					orange: '#F97316',
 					yellow: '#FEC84B',
 					green: '#4ADE80',
+					coral: '#EA384C',
 					"light-blue": '#BAE6FD',
 					"light-orange": '#FFEDD5',
 					"light-yellow": '#FEF9C3',
 					"light-green": '#DCFCE7',
+					"light-coral": '#FECDD3',
 				}
 			},
 			borderRadius: {
@@ -180,6 +182,9 @@ export default {
 				},
 				'.glow-green': {
 					filter: 'drop-shadow(0 0 8px rgba(74, 222, 128, 0.5))'
+				},
+				'.glow-coral': {
+					filter: 'drop-shadow(0 0 8px rgba(234, 56, 76, 0.5))'
 				},
 			}
 			addUtilities(newUtilities)

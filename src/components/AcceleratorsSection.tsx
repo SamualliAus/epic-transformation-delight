@@ -9,7 +9,7 @@ interface AcceleratorCard {
   title: string;
   description: string;
   category: 'Make More' | 'Spend Less' | 'Build Culture';
-  color: 'blue' | 'yellow' | 'green';
+  color: 'blue' | 'yellow' | 'coral';
   path: string;
 }
 
@@ -33,7 +33,7 @@ const accelerators: AcceleratorCard[] = [
     title: 'Team OS',
     description: 'Turn group potential into team performance.',
     category: 'Build Culture',
-    color: 'green',
+    color: 'coral',
     path: '/accelerators/team-os'
   },
   {
@@ -47,7 +47,7 @@ const accelerators: AcceleratorCard[] = [
     title: 'Culture Ignition',
     description: 'Align beliefs and rituals so people lead the change.',
     category: 'Build Culture',
-    color: 'green',
+    color: 'coral',
     path: '/accelerators/culture-ignition'
   },
   {
@@ -75,7 +75,7 @@ const accelerators: AcceleratorCard[] = [
     title: 'Lead Boldly',
     description: 'Help leaders step up and shape what\'s next.',
     category: 'Build Culture',
-    color: 'green',
+    color: 'coral',
     path: '/accelerators/lead-boldly'
   }
 ];
@@ -113,7 +113,7 @@ const AcceleratorsSection: React.FC = () => {
       case 'Spend Less':
         return 'bg-gradient-to-r from-epic-yellow via-epic-yellow/80 to-epic-yellow/60 hover:from-epic-yellow hover:via-epic-yellow/70 hover:to-epic-yellow/50 transition-all duration-300';
       case 'Build Culture':
-        return 'bg-gradient-to-r from-epic-green via-epic-green/80 to-epic-green/60 hover:from-epic-green hover:via-epic-green/70 hover:to-epic-green/50 transition-all duration-300';
+        return 'bg-gradient-to-r from-epic-coral via-epic-coral/80 to-epic-coral/60 hover:from-epic-coral hover:via-epic-coral/70 hover:to-epic-coral/50 transition-all duration-300';
       default:
         return 'bg-gradient-to-r from-epic-blue via-epic-blue/80 to-epic-blue/60 hover:from-epic-blue hover:via-epic-blue/70 hover:to-epic-blue/50 transition-all duration-300';
     }
@@ -127,7 +127,7 @@ const AcceleratorsSection: React.FC = () => {
       case 'Spend Less':
         return 'border-t-transparent before:absolute before:inset-x-0 before:top-0 before:h-1 before:bg-gradient-to-r before:from-epic-yellow before:to-epic-light-yellow';
       case 'Build Culture':
-        return 'border-t-transparent before:absolute before:inset-x-0 before:top-0 before:h-1 before:bg-gradient-to-r before:from-epic-green before:to-epic-light-green';
+        return 'border-t-transparent before:absolute before:inset-x-0 before:top-0 before:h-1 before:bg-gradient-to-r before:from-epic-coral before:to-epic-light-coral';
       default:
         return 'border-t-transparent before:absolute before:inset-x-0 before:top-0 before:h-1 before:bg-gradient-to-r before:from-epic-blue before:to-epic-light-blue';
     }
@@ -141,7 +141,7 @@ const AcceleratorsSection: React.FC = () => {
       case 'Spend Less':
         return 'bg-gradient-to-r from-epic-light-yellow/40 to-epic-light-yellow/20 text-epic-yellow border border-epic-yellow/20';
       case 'Build Culture':
-        return 'bg-gradient-to-r from-epic-light-green/40 to-epic-light-green/20 text-epic-green border border-epic-green/20';
+        return 'bg-gradient-to-r from-epic-light-coral/40 to-epic-light-coral/20 text-epic-coral border border-epic-coral/20';
       default:
         return 'bg-gradient-to-r from-epic-light-blue/40 to-epic-light-blue/20 text-epic-blue border border-epic-blue/20';
     }

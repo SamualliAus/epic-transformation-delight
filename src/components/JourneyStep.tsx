@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 
 interface Accelerator {
   name: string;
-  color: 'blue' | 'orange' | 'yellow' | 'green';
+  color: 'blue' | 'orange' | 'yellow' | 'coral';
   description: string;
   category: 'Make More' | 'Spend Less' | 'Build Culture';
 }
@@ -43,7 +43,7 @@ const JourneyStep: React.FC<JourneyStepProps> = ({
       case 'blue': return 'text-epic-blue';
       case 'orange': return 'text-epic-orange';
       case 'yellow': return 'text-epic-yellow';
-      case 'green': return 'text-epic-green';
+      case 'coral': return 'text-epic-coral';
       default: return 'text-epic-blue';
     }
   };
@@ -53,7 +53,7 @@ const JourneyStep: React.FC<JourneyStepProps> = ({
       case 'blue': return '🔵';
       case 'orange': return '🔶';
       case 'yellow': return '🟡';
-      case 'green': return '🟢';
+      case 'coral': return '🔴';
       default: return '⚪';
     }
   };
@@ -62,7 +62,7 @@ const JourneyStep: React.FC<JourneyStepProps> = ({
     switch (category) {
       case 'Make More': return 'from-epic-blue/20 to-epic-blue/10 border-epic-blue/30';
       case 'Spend Less': return 'from-epic-yellow/20 to-epic-yellow/10 border-epic-yellow/30';
-      case 'Build Culture': return 'from-epic-green/20 to-epic-green/10 border-epic-green/30';
+      case 'Build Culture': return 'from-epic-coral/20 to-epic-coral/10 border-epic-coral/30';
       default: return 'from-epic-blue/20 to-epic-blue/10 border-epic-blue/30';
     }
   };
@@ -138,7 +138,7 @@ const JourneyStep: React.FC<JourneyStepProps> = ({
                       </span>
                       <Link 
                         to="/accelerators" 
-                        className="ml-2 text-xs text-epic-blue hover:text-epic-orange inline-flex items-center group"
+                        className="ml-2 text-xs text-epic-blue hover:text-epic-coral inline-flex items-center group"
                       >
                         Learn more 
                         <span className="transform group-hover:translate-x-1 transition-transform duration-300 inline-block ml-1">→</span>

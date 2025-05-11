@@ -12,7 +12,7 @@ type JourneyStepData = {
   extendedDescription: string;
   accelerators: {
     name: string;
-    color: 'blue' | 'orange' | 'yellow' | 'green';
+    color: 'blue' | 'orange' | 'yellow' | 'coral';
     description: string;
     category: 'Make More' | 'Spend Less' | 'Build Culture';
   }[];
@@ -31,7 +31,7 @@ const journeySteps: JourneyStepData[] = [
     extendedDescription: "You know something's not working—but it's hard to see why. This is where we help you surface the root issues, remove blockers, and start flowing again.",
     accelerators: [
       { name: "Value Flow", color: "yellow", description: "Unclog bottlenecks so value moves freely.", category: "Spend Less" },
-      { name: "Team OS", color: "green", description: "Turn group potential into team performance.", category: "Build Culture" }
+      { name: "Team OS", color: "coral", description: "Turn group potential into team performance.", category: "Build Culture" }
     ],
     targetAudience: "Perfect for teams overloaded with work, unclear priorities, or disconnected delivery.",
     color: "#0EA5E9", // Blue
@@ -46,7 +46,7 @@ const journeySteps: JourneyStepData[] = [
     extendedDescription: "This is where you rewire how your people show up—together. It's about reigniting shared purpose, improving leadership, and building rituals that make culture contagious.",
     accelerators: [
       { name: "Sharp Strategy", color: "blue", description: "Make smarter product bets, faster.", category: "Make More" },
-      { name: "Culture Ignition", color: "green", description: "Align beliefs and rituals so people lead the change.", category: "Build Culture" },
+      { name: "Culture Ignition", color: "coral", description: "Align beliefs and rituals so people lead the change.", category: "Build Culture" },
       { name: "Confident Delivery", color: "yellow", description: "Get the right things done, reliably.", category: "Spend Less" }
     ],
     targetAudience: "For organisations struggling with misalignment, inconsistent leadership, or low trust in delivery.",
@@ -62,7 +62,7 @@ const journeySteps: JourneyStepData[] = [
     extendedDescription: "You're making progress, but there's friction—silos, handoffs, shadow work. Now's the time to redesign structures and empower your leaders and teams to scale impact.",
     accelerators: [
       { name: "Smart Structure", color: "yellow", description: "Rebuild how you work to match what you want to achieve.", category: "Spend Less" },
-      { name: "Lead Boldly", color: "green", description: "Help leaders step up and shape what's next.", category: "Build Culture" }
+      { name: "Lead Boldly", color: "coral", description: "Help leaders step up and shape what's next.", category: "Build Culture" }
     ],
     targetAudience: "For teams bogged down in bureaucracy, duplicated effort, or unclear ownership.",
     color: "#FEC84B", // Yellow
@@ -134,6 +134,7 @@ const TransformationJourneySection: React.FC = () => {
       case 'orange': return 'bg-gradient-to-r from-epic-orange to-epic-orange/70 text-white';
       case 'yellow': return 'bg-gradient-to-r from-epic-yellow to-epic-yellow/70 text-white';
       case 'green': return 'bg-gradient-to-r from-epic-green to-epic-green/70 text-white';
+      case 'coral': return 'bg-gradient-to-r from-epic-coral to-epic-coral/70 text-white';
       default: return 'bg-gradient-to-r from-epic-blue to-epic-blue/70 text-white';
     }
   };
@@ -144,6 +145,7 @@ const TransformationJourneySection: React.FC = () => {
       case 'orange': return 'text-epic-orange';
       case 'yellow': return 'text-epic-yellow';
       case 'green': return 'text-epic-green';
+      case 'coral': return 'text-epic-coral';
       default: return 'text-epic-blue';
     }
   };
@@ -152,7 +154,7 @@ const TransformationJourneySection: React.FC = () => {
     switch (category) {
       case 'Make More': return 'from-epic-blue/20 to-epic-blue/5 border-epic-blue/30';
       case 'Spend Less': return 'from-epic-yellow/20 to-epic-yellow/5 border-epic-yellow/30';
-      case 'Build Culture': return 'from-epic-green/20 to-epic-green/5 border-epic-green/30';
+      case 'Build Culture': return 'from-epic-coral/20 to-epic-coral/5 border-epic-coral/30';
       default: return 'from-epic-blue/20 to-epic-blue/5 border-epic-blue/30';
     }
   };
@@ -161,7 +163,7 @@ const TransformationJourneySection: React.FC = () => {
     switch (category) {
       case 'Make More': return 'bg-gradient-to-r from-epic-light-blue to-epic-blue/20 text-epic-blue';
       case 'Spend Less': return 'bg-gradient-to-r from-epic-light-yellow to-epic-yellow/20 text-epic-yellow';
-      case 'Build Culture': return 'bg-gradient-to-r from-epic-light-green to-epic-green/20 text-epic-green';
+      case 'Build Culture': return 'bg-gradient-to-r from-epic-light-coral to-epic-coral/20 text-epic-coral';
       default: return 'bg-gradient-to-r from-epic-light-blue to-epic-blue/20 text-epic-blue';
     }
   };
