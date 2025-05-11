@@ -1,9 +1,26 @@
 
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { cn } from '@/lib/utils';
-import JourneyStep, { JourneyStepProps } from './JourneyStep';
+import { Link } from 'react-router-dom';
+import { ArrowRight } from 'lucide-react';
+import { Badge } from './ui/badge';
 
-type JourneyStepData = Omit<JourneyStepProps, 'isActive' | 'progress'>;
+type JourneyStepData = {
+  level: number;
+  title: string;
+  description: string;
+  extendedDescription: string;
+  accelerators: {
+    name: string;
+    color: 'blue' | 'orange' | 'yellow' | 'green';
+    description: string;
+    category: 'Make More' | 'Spend Less' | 'Build Culture';
+  }[];
+  targetAudience: string;
+  color: string;
+  baseColorClass: string;
+  textColorClass: string;
+};
 
 const journeySteps: JourneyStepData[] = [
   {
@@ -67,72 +84,15 @@ const journeySteps: JourneyStepData[] = [
 
 const TransformationJourneySection: React.FC = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
-  const lineRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
-  const [scrollProgress, setScrollProgress] = useState(0);
-  const [activeStepIndex, setActiveStepIndex] = useState(0);
-  const [stepVisibility, setStepVisibility] = useState<boolean[]>(
-    Array(journeySteps.length).fill(false)
-  );
-
-  // Calculate active step progress
-  const calculateStepProgress = useCallback((scrollProg: number, index: number) => {
-    const totalSteps = journeySteps.length;
-    const stepSize = 1 / totalSteps;
-    const stepStart = index * stepSize;
-    const stepEnd = (index + 1) * stepSize;
-    
-    if (scrollProg < stepStart) return 0;
-    if (scrollProg > stepEnd) return 1;
-    
-    return (scrollProg - stepStart) / stepSize;
-  }, []);
-
-  // Memoize the scroll handler to prevent unnecessary re-renders
-  const handleScroll = useCallback(() => {
-    if (sectionRef.current) {
-      const rect = sectionRef.current.getBoundingClientRect();
-      const sectionHeight = rect.height;
-      const sectionTop = rect.top;
-      const viewportHeight = window.innerHeight;
-      
-      // Only update if section is in view
-      if (sectionTop <= viewportHeight && sectionTop > -sectionHeight) {
-        // Calculate progress based on viewport position
-        const calculatedProgress = Math.min(
-          1, 
-          Math.max(0, (viewportHeight - sectionTop) / (viewportHeight + sectionHeight * 0.7))
-        );
-        
-        setScrollProgress(calculatedProgress);
-        
-        // Calculate active step - ensure it's always valid
-        const newActiveIndex = Math.min(
-          journeySteps.length - 1,
-          Math.max(0, Math.floor(calculatedProgress * journeySteps.length))
-        );
-        
-        setActiveStepIndex(newActiveIndex);
-        
-        // Update step visibility
-        setStepVisibility(prev => {
-          const newVisibility = [...prev];
-          for (let i = 0; i <= newActiveIndex; i++) {
-            newVisibility[i] = true;
-          }
-          return newVisibility;
-        });
-      }
-    }
-  }, []);
+  const [activeStep, setActiveStep] = useState<number>(0);
+  const [isAnimating, setIsAnimating] = useState(false);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
           setIsVisible(true);
-          // Initial scroll handling when section becomes visible
-          handleScroll();
         }
       },
       { threshold: 0.1 }
@@ -142,76 +102,43 @@ const TransformationJourneySection: React.FC = () => {
       observer.observe(sectionRef.current);
     }
     
-    // Add throttled scroll event listener
-    let ticking = false;
-    const scrollListener = () => {
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          handleScroll();
-          ticking = false;
-        });
-        ticking = true;
-      }
-    };
-    
-    window.addEventListener('scroll', scrollListener, { passive: true });
-    
     return () => {
       if (sectionRef.current) {
         observer.unobserve(sectionRef.current);
       }
-      window.removeEventListener('scroll', scrollListener);
     };
-  }, [handleScroll]);
+  }, []);
 
-  // Safely get gradient style for the line
-  const getLineGradientStyle = () => {
-    try {
-      // Ensure journeySteps exists and has items
-      if (!journeySteps || journeySteps.length === 0) {
-        return {
-          background: '#0EA5E9', // Default blue
-          height: '0%'
-        };
-      }
-      
-      // Calculate progress values
-      const totalSteps = journeySteps.length;
-      const stepProgress = scrollProgress * totalSteps;
-      
-      // Get current and next indices
-      const currentIndex = Math.min(Math.floor(stepProgress), totalSteps - 1);
-      const nextIndex = Math.min(currentIndex + 1, totalSteps - 1);
-      
-      // Fraction between current and next
-      const progressBetweenSteps = stepProgress - currentIndex;
-      
-      // Get colors safely with defaults
-      const currentColor = journeySteps[currentIndex]?.color || '#0EA5E9';
-      const nextColor = journeySteps[nextIndex]?.color || currentColor;
-      
-      let backgroundStyle;
-      
-      // Simple gradient or solid color
-      if (currentIndex === nextIndex) {
-        backgroundStyle = currentColor;
-      } else {
-        backgroundStyle = `linear-gradient(to bottom, 
-          ${currentColor} 0%, 
-          ${currentColor} ${(1 - progressBetweenSteps) * 100}%, 
-          ${nextColor} 100%)`;
-      }
-      
-      return {
-        background: backgroundStyle,
-        height: `${Math.min(100, scrollProgress * 100)}%`
-      };
-    } catch (error) {
-      console.error("Error in gradient calculation:", error);
-      return {
-        background: '#0EA5E9',
-        height: '0%'
-      };
+  const handleStepClick = useCallback((index: number) => {
+    if (index === activeStep) return;
+    
+    setIsAnimating(true);
+    
+    setTimeout(() => {
+      setActiveStep(index);
+      setTimeout(() => {
+        setIsAnimating(false);
+      }, 300);
+    }, 300);
+  }, [activeStep]);
+
+  // Helper function for color classes
+  const getColorClass = (color: string): string => {
+    switch (color) {
+      case 'blue': return 'text-epic-blue';
+      case 'orange': return 'text-epic-orange';
+      case 'yellow': return 'text-epic-yellow';
+      case 'green': return 'text-epic-green';
+      default: return 'text-epic-blue';
+    }
+  };
+  
+  const getCategoryColorClass = (category: string): string => {
+    switch (category) {
+      case 'Make More': return 'from-epic-blue/20 to-epic-blue/10 border-epic-blue/30';
+      case 'Spend Less': return 'from-epic-yellow/20 to-epic-yellow/10 border-epic-yellow/30';
+      case 'Build Culture': return 'from-epic-green/20 to-epic-green/10 border-epic-green/30';
+      default: return 'from-epic-blue/20 to-epic-blue/10 border-epic-blue/30';
     }
   };
 
@@ -221,7 +148,7 @@ const TransformationJourneySection: React.FC = () => {
       id="transformation-journey" 
       className="py-24 bg-gradient-to-br from-gray-50 to-white relative overflow-hidden"
     >
-      <div className="absolute inset-0 -z-10">
+      <div className="absolute inset-0 -z-10 overflow-hidden">
         <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-epic-light-blue rounded-full filter blur-3xl opacity-10 animate-spin-slow"></div>
         <div 
           className="absolute bottom-1/4 left-1/4 w-64 h-64 bg-epic-light-orange rounded-full filter blur-3xl opacity-10 animate-spin-slow" 
@@ -235,14 +162,14 @@ const TransformationJourneySection: React.FC = () => {
       <div className="container-custom">
         <div className="max-w-3xl mx-auto mb-16 text-center">
           <h2 className={cn(
-            "mb-4 opacity-0 animated-gradient-text inline-block",
-            isVisible && "animate-fade-in"
+            "mb-4 animated-gradient-text inline-block",
+            isVisible ? "animate-fade-in" : "opacity-0"
           )}>
             Your EPiC Journey
           </h2>
           <p className={cn(
-            "text-xl text-gray-700 mb-12 opacity-0",
-            isVisible && "animate-fade-in"
+            "text-xl text-gray-700 mb-12",
+            isVisible ? "animate-fade-in" : "opacity-0"
           )}
           style={{ animationDelay: '0.2s' }}
           >
@@ -251,42 +178,154 @@ const TransformationJourneySection: React.FC = () => {
           </p>
         </div>
 
-        <div className="relative max-w-4xl mx-auto">
-          {/* Vertical connecting line with enhanced animation */}
-          <div className="absolute left-4 top-8 bottom-8 w-1 bg-gray-200 rounded-full overflow-hidden">
-            <div 
-              ref={lineRef} 
-              className="absolute left-0 bottom-0 w-full transition-all duration-500 ease-in-out"
-              style={getLineGradientStyle()} 
-            />
-          </div>
-
-          <div className="space-y-24 pb-16">
+        {/* Journey Navigator - Interactive Path */}
+        <div className={cn(
+          "max-w-5xl mx-auto mb-20 relative",
+          isVisible ? "animate-fade-in" : "opacity-0"
+        )}
+        style={{ animationDelay: '0.3s' }}>
+          <div className="flex justify-between items-center relative">
+            {/* Path line with gradient */}
+            <div className="absolute top-1/2 left-0 right-0 h-2 bg-gray-100 rounded-full -translate-y-1/2 z-0">
+              <div 
+                className="absolute top-0 left-0 h-full rounded-full transition-all duration-500"
+                style={{
+                  width: `${(activeStep + 1) / journeySteps.length * 100}%`,
+                  background: `linear-gradient(to right, #0EA5E9, #F97316, #FEC84B, #4ADE80)`
+                }}
+              ></div>
+            </div>
+            
+            {/* Journey steps as nodes */}
             {journeySteps.map((step, index) => (
               <div 
                 key={index} 
                 className={cn(
-                  "opacity-0", 
-                  isVisible && "animate-fade-in",
-                  stepVisibility[index] ? "opacity-100" : "opacity-40"
-                )} 
-                style={{
-                  animationDelay: `${0.2 * index}s`,
-                  transition: "opacity 0.5s ease-out"
-                }}
-              >
-                <JourneyStep 
-                  {...step} 
-                  isActive={index <= activeStepIndex} 
-                  progress={calculateStepProgress(scrollProgress, index)}
-                />
-                
-                {index < journeySteps.length - 1 && (
-                  <div className="mt-8 border-t border-gray-200 w-1/2 opacity-50"></div>
+                  "w-14 h-14 rounded-full relative z-10 flex items-center justify-center cursor-pointer transition-all duration-300",
+                  index <= activeStep ? step.baseColorClass : "bg-white border-2 border-gray-200",
+                  index === activeStep && "scale-125 shadow-lg",
                 )}
+                onClick={() => handleStepClick(index)}
+              >
+                <div className={cn(
+                  "text-lg font-bold",
+                  index <= activeStep ? "text-white" : step.textColorClass
+                )}>
+                  {step.level}
+                </div>
+                
+                <div className="absolute -bottom-8 text-sm font-medium whitespace-nowrap">
+                  <span className={step.textColorClass}>{step.title}</span>
+                </div>
               </div>
             ))}
           </div>
+        </div>
+
+        {/* Active step details */}
+        <div className="max-w-5xl mx-auto">
+          <div 
+            className={cn(
+              "transition-all duration-300 bg-white rounded-2xl p-8 shadow-lg border border-gray-100",
+              isAnimating ? "opacity-0 transform translate-y-8" : "opacity-100 transform translate-y-0"
+            )}
+          >
+            <div className="flex flex-col lg:flex-row gap-8">
+              {/* Content */}
+              <div className="flex-1">
+                <div className={cn("inline-block px-3 py-1 rounded-full text-sm font-medium mb-3", journeySteps[activeStep].baseColorClass, "text-white")}>
+                  Level {journeySteps[activeStep].level}
+                </div>
+                
+                <h3 className={cn("text-3xl font-bold mb-4", journeySteps[activeStep].textColorClass)}>
+                  {journeySteps[activeStep].title}
+                </h3>
+                
+                <p className="text-xl font-medium text-gray-800 mb-4">
+                  {journeySteps[activeStep].description}
+                </p>
+                
+                <p className="text-gray-600 mb-6">
+                  {journeySteps[activeStep].extendedDescription}
+                </p>
+                
+                <p className="text-sm text-gray-500 italic mb-6">
+                  {journeySteps[activeStep].targetAudience}
+                </p>
+              </div>
+              
+              {/* Accelerators */}
+              <div className="lg:w-2/5">
+                <h4 className="text-sm uppercase font-semibold text-gray-500 mb-4 tracking-wider">
+                  Recommended Accelerators
+                </h4>
+                
+                <div className="space-y-4">
+                  {journeySteps[activeStep].accelerators.map((accelerator, accIndex) => (
+                    <Link 
+                      to="/accelerators" 
+                      key={accIndex}
+                      className={cn(
+                        "block p-4 rounded-lg border bg-gradient-to-br transition-all duration-300",
+                        getCategoryColorClass(accelerator.category),
+                        "hover:shadow-md transform hover:translate-x-1"
+                      )}
+                    >
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <span className={cn("font-medium", getColorClass(accelerator.color))}>
+                            {accelerator.name}
+                          </span>
+                          <p className="text-gray-600 text-sm mt-1">
+                            {accelerator.description}
+                          </p>
+                        </div>
+                        <Badge variant="secondary" className={cn(
+                          "ml-2 shrink-0",
+                          accelerator.category === "Make More" ? "bg-epic-light-blue text-epic-blue" :
+                          accelerator.category === "Spend Less" ? "bg-epic-light-yellow text-epic-yellow" :
+                          "bg-epic-light-green text-epic-green"
+                        )}>
+                          {accelerator.category}
+                        </Badge>
+                      </div>
+                      <div className="mt-3 flex justify-end">
+                        <span className="text-xs text-epic-blue flex items-center gap-1 group">
+                          Learn more <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform duration-300" />
+                        </span>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+                
+                <div className="mt-6 flex justify-center">
+                  <Link 
+                    to="/accelerators"
+                    className="text-sm text-epic-blue hover:text-epic-orange flex items-center gap-1 font-medium"
+                  >
+                    View all accelerators <ArrowRight size={16} />
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Journey progress indicator */}
+        <div className="max-w-sm mx-auto mt-12 flex justify-between">
+          {journeySteps.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => handleStepClick(index)}
+              className={cn(
+                "w-3 h-3 rounded-full transition-all duration-300",
+                index === activeStep ? 
+                  journeySteps[index].baseColorClass : 
+                  "bg-gray-200 hover:bg-gray-300"
+              )}
+              aria-label={`Go to step ${index + 1}`}
+            />
+          ))}
         </div>
       </div>
     </section>
