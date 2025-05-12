@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 
 const HeroSection: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
+  const [videoLoaded, setVideoLoaded] = useState(false);
   
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -22,17 +23,30 @@ const HeroSection: React.FC = () => {
       });
     }
   };
+
+  const handleVideoLoad = () => {
+    console.log("Video loaded successfully");
+    setVideoLoaded(true);
+  };
   
   return (
     <section className="relative min-h-screen flex flex-col justify-center pt-20 pb-10 overflow-hidden">
-      <div className="absolute inset-0 -z-10 overflow-hidden">
-        {/* Video background with reduced opacity */}
-        <div className="absolute inset-0 w-full h-full opacity-20">
+      {/* Background container with higher z-index than -10 to ensure visibility */}
+      <div className="absolute inset-0 -z-5 overflow-visible">
+        {/* Video background in its own container */}
+        <div 
+          className={cn(
+            "absolute inset-0 w-full h-full",
+            videoLoaded ? "opacity-20" : "opacity-0"
+          )}
+          style={{ transition: "opacity 1s ease" }}
+        >
           <video 
             autoPlay 
             loop 
             muted 
             playsInline
+            onCanPlay={handleVideoLoad}
             className="w-full h-full object-cover"
           >
             <source src="https://cdn.gpteng.co/miscellaneous/abstract-gradient-flow.mp4" type="video/mp4" />
