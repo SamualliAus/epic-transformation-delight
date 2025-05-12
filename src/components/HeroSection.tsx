@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { ArrowDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -25,22 +26,24 @@ const HeroSection: React.FC = () => {
   return (
     <section className="relative min-h-screen flex flex-col justify-center pt-20 pb-10 overflow-hidden">
       <div className="absolute inset-0 -z-10 overflow-hidden">
-        {/* Video background */}
-        <video 
-          autoPlay 
-          loop 
-          muted 
-          playsInline
-          className="absolute w-full h-full object-cover"
-        >
-          <source src="https://cdn.gpteng.co/miscellaneous/abstract-gradient-flow.mp4" type="video/mp4" />
-          Your browser does not support the video tag.
-        </video>
+        {/* Video background with reduced opacity */}
+        <div className="absolute inset-0 w-full h-full opacity-20">
+          <video 
+            autoPlay 
+            loop 
+            muted 
+            playsInline
+            className="w-full h-full object-cover"
+          >
+            <source src="https://cdn.gpteng.co/miscellaneous/abstract-gradient-flow.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        </div>
         
         {/* Gradient overlay to ensure text readability */}
         <div className="absolute inset-0 bg-gradient-to-br from-white/90 via-gray-50/90 to-gray-100/90"></div>
         
-        {/* We'll keep the blob decorations for added visual interest */}
+        {/* Blob decorations for added visual interest */}
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-epic-light-blue rounded-full filter blur-3xl opacity-20 animate-float"></div>
         <div 
           className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-epic-light-orange rounded-full filter blur-3xl opacity-20 animate-float" 
